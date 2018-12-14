@@ -11,7 +11,7 @@ window.localStorage = global.localStorage;
 
 let ls;
 
-describe('webStorage', () => {
+describe('WebStorage', () => {
   beforeEach(() => {
     localStorage.clear();
     sessionStorage.clear();
@@ -44,88 +44,79 @@ describe('webStorage', () => {
     expect(() => new WebStorage({ keySeparator: void 0 })).to.throw(TypeError);
   });
 
-  it('Should succesfully save and retrieve values to localStorage', done => {
-    ls.setItem('foo', {foo: 'bar'}).then(() => ls.getItem('foo')).then(value => {
-      expect(value).to.eql({foo: 'bar'});
-      done();
-    }).catch(done);
+  it('Should succesfully save and retrieve values to localStorage', () => {
+    ls.setItem('foo', {foo: 'bar'});
+
+    const val = ls.getItem('foo');
+
+    expect(val).to.eql({ foo: 'bar' });
   });
 
-  it('Should remove a saved item by its key', done => {
-    ls.setItem('foo', {foo: 'bar'}).then(() => {
-      return ls.getItem('foo');
-    }).then(value => {
-      expect(value).to.eql({foo: 'bar'});
-      return ls.removeItem('foo');
-    }).then(() => {
-      return ls.getItem('foo');
-    }).then(value => {
-      expect(value).to.equal(null);
-      done();
-    }).catch(done);
+  it('Should remove a saved item by its key', () => {
+    ls.setItem('foo', { foo: 'bar' });
+
+    expect(ls.getItem('foo')).to.eql({ foo: 'bar' });
+
+    ls.removeItem('foo');
+
+    expect(ls.getItem('foo')).to.equal(null);
   });
 
-  it('Should clear all keys from a specific database, but leave any other saved data (not in database) intact', done => {
-    const p1 = ls.setItem('p1', {foo: 'bar'});
-    const p2 = ls.setItem('p2', 'foobar');
-    const p3 = ls.setItem('p3', [1, 2, 3]);
+  it('Should clear all keys from a specific database, but leave any other saved data (not in database) intact', () => {
+    ls.setItem('p1', { foo: 'bar' });
+    ls.setItem('p2', 'foobar');
+    ls.setItem('p3', [1, 2, 3]);
 
     localStorage.setItem('p4', 'Not in database');
 
-    Promise.all([p1, p2, p3]).then(() => {
-      ls.length().then(len => {
-        expect(len).to.equal(3);
+    expect(ls.length()).to.equal(3);
 
-        return ls.clear().then(() => {
-          return ls.length().then(res => {
-            expect(res).to.equal(0);
-            expect(localStorage).to.have.have.lengthOf(1);
-            done();
-          });
-        });
-      }).catch(done);
-    });
+    ls.clear();
+
+    expect(ls.length()).to.equal(0);
+    expect(localStorage).to.have.lengthOf(1);
   });
 
-  it('Should iterate over all value/key pairs in datastore', done => {
+  it('Should iterate over all value/key pairs in datastore', () => {
     const temp = [];
 
-    const p1 = ls.setItem('p1', 'Item 1');
-    const p2 = ls.setItem('p2', 'Item 2');
-    const p3 = ls.setItem('p3', 'Item 3');
+    ls.setItem('p1', 'Item 1');
+    ls.setItem('p2', 'Item 2');
+    ls.setItem('p3', 'Item 3');
 
-    Promise.all([p1, p2, p3]).then(() => {
-      ls.iterate((key, value) => {
-        temp.push(value);
-      }).then(() => {
-        expect(temp).to.have.lengthOf(3);
-        expect(temp[0]).to.equal('Item 1');
-        expect(temp[1]).to.equal('Item 2');
-        expect(temp[2]).to.equal('Item 3');
-        done();
-      }).catch(done);
+    ls.iterate((key, value) => {
+      temp.push(value);
     });
+
+    expect(temp).to.have.lengthOf(3);
+    expect(temp[0]).to.equal('Item 1');
+    expect(temp[1]).to.equal('Item 2');
+    expect(temp[2]).to.equal('Item 3');
   });
 
-  it('Should return the keys of a datastore as an array of strings', done => {
-    const p1 = ls.setItem('p1', 'Item 1');
-    const p2 = ls.setItem('p2', 'Item 2');
-    const p3 = ls.setItem('p3', 'Item 3');
-
-    Promise.all([p1, p2, p3]).then(() => {
-      ls.keys().then(keys => {
-        expect(Array.isArray(keys)).to.equal(true);
-        expect(keys).to.have.lengthOf(3)
-        expect(keys.indexOf('p1')).to.not.equal(-1);
-        expect(keys.indexOf('p2')).to.not.equal(-1);
-        expect(keys.indexOf('p3')).to.not.equal(-1);
-        expect(keys.indexOf('p4')).to.equal(-1);
-        done();
-      }).catch(done);
-    });
+  it('Should throw TypeError if "iteratorCallback is not a function"', () => {
+    expect(() => ls.iterate()).to.throw(TypeError);
+    expect(() => ls.iterate({})).to.throw(TypeError);
+    expect(() => ls.iterate([])).to.throw(TypeError);
+    expect(() => ls.iterate(null)).to.throw(TypeError);
   });
 
-  it('Should return the length of saved items for a specific database', done => {
+  it('Should return the keys of a datastore as an array of strings', () => {
+    ls.setItem('p1', 'Item 1');
+    ls.setItem('p2', 'Item 2');
+    ls.setItem('p3', 'Item 3');
+
+    const keys = ls.keys();
+
+    expect(Array.isArray(keys)).to.equal(true);
+    expect(keys).to.have.lengthOf(3);
+    expect(keys.indexOf('p1')).to.not.equal(-1);
+    expect(keys.indexOf('p2')).to.not.equal(-1);
+    expect(keys.indexOf('p3')).to.not.equal(-1);
+    expect(keys.indexOf('p4')).to.equal(-1);
+  });
+
+  it('Should return the length of saved items for a specific database', () => {
     const ls1 = new WebStorage({
       name: 'App1'
     });
@@ -134,22 +125,15 @@ describe('webStorage', () => {
       name: 'App2'
     });
 
-    const pA1 = ls1.setItem('p1', 'Item 1');
-    const pA2 = ls1.setItem('p2', 'Item 2');
-    const pA3 = ls1.setItem('p3', 'Item 3');
+    ls1.setItem('p1', 'Item 1');
+    ls1.setItem('p2', 'Item 2');
+    ls1.setItem('p3', 'Item 3');
 
-    const pB1 = ls2.setItem('p1', 'Item 1');
-    const pB2 = ls2.setItem('p2', 'Item 2');
+    ls2.setItem('p1', 'Item 1');
+    ls2.setItem('p2', 'Item 2');
 
-    Promise.all([pA1, pA2, pA3, pB1, pB2]).then(() => {
-      ls1.length().then(len => {
-        expect(len).to.equal(3);
-      }).catch(done);
+    expect(ls1.length()).to.equal(3);
 
-      ls2.length().then(len => {
-        expect(len).to.equal(2);
-        done();
-      }).catch(done);
-    });
+    expect(ls2.length()).to.equal(2);
   });
 });

@@ -7,11 +7,7 @@
   },
   "parserOptions": {
     "ecmaVersion": 6,
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "impliedStrict": true,
-      "experimentalObjectRestSpread": true
-    }
+    "sourceType": "module"
   },
   "globals": {
     "WebStorage": false
