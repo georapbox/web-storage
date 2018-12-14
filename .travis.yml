@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+  - 10.14.2
+branches:
+  only:
+    - master
+before_script:
+  - npm install
+script:
+  - npm run coverage
+  - codecov

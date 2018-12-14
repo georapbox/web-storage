@@ -1,0 +1,58 @@
+{
+  "name": "@georapbox/web-storage",
+  "version": "1.0.0",
+  "description": "WebStorage is a JavaScript library that improves the way you work with localStorage or sessionStorage by using an asynchronous data store with a simple, localStorage-like API. It allows developers to store many types of data instead of just strings.",
+  "main": "dist/WebStorage.js",
+  "files": [
+    "src/",
+    "dist/"
+  ],
+  "scripts": {
+    "test": "cross-env NODE_ENV=test mocha --require @babel/register --require mock-local-storage --colors ./test/*.spec.js",
+    "coverage": "nyc --reporter=text --reporter=lcov npm test",
+    "lint": "eslint src/**/*.js",
+    "build:umdmin": "webpack --mode=production --output-library-target=umd",
+    "build:umd": "webpack --mode=development --output-library-target=umd",
+    "build": "npm-run-all build:*",
+    "dev:umd": "webpack --progress --colors --watch --mode=development --output-library-target=umd",
+    "dev": "npm-run-all --parallel dev:*",
+    "prepublishOnly": "npm-run-all test build",
+    "prepack": "npm-run-all test build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/georapbox/web-storage.git"
+  },
+  "keywords": [
+    "localStorage",
+    "sessionStorage",
+    "Storage",
+    "Offline Storage",
+    "Web Storage",
+    "DOM Storage"
+  ],
+  "author": "George Raptis <georapbox@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/georapbox/web-storage/issues"
+  },
+  "homepage": "https://github.com/georapbox/web-storage#readme",
+  "devDependencies": {
+    "@babel/core": "~7.2.0",
+    "@babel/preset-env": "~7.2.0",
+    "@babel/register": "~7.0.0",
+    "babel-loader": "~8.0.4",
+    "chai": "~4.2.0",
+    "cross-env": "~5.2.0",
+    "eslint": "~5.10.0",
+    "eslint-loader": "~2.1.1",
+    "mocha": "~5.2.0",
+    "mock-local-storage": "~1.1.7",
+    "npm-run-all": "~4.1.5",
+    "nyc": "~13.1.0",
+    "sinon-chai": "~3.3.0",
+    "webpack": "~4.27.1",
+    "webpack-cli": "~3.1.2",
+    "yargs": "~12.0.5"
+  }
+}
