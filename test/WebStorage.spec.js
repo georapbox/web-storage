@@ -78,20 +78,27 @@ describe('WebStorage', () => {
   });
 
   it('Should iterate over all value/key pairs in datastore', () => {
-    const temp = [];
+    const values = [];
+    const keys = [];
 
     ls.setItem('p1', 'Item 1');
     ls.setItem('p2', 'Item 2');
     ls.setItem('p3', 'Item 3');
 
-    ls.iterate((key, value) => {
-      temp.push(value);
+    ls.iterate((value, key) => {
+      values.push(value);
+      keys.push(key);
     });
 
-    expect(temp).to.have.lengthOf(3);
-    expect(temp[0]).to.equal('Item 1');
-    expect(temp[1]).to.equal('Item 2');
-    expect(temp[2]).to.equal('Item 3');
+    expect(values).to.have.lengthOf(3);
+    expect(values[0]).to.equal('Item 1');
+    expect(values[1]).to.equal('Item 2');
+    expect(values[2]).to.equal('Item 3');
+
+    expect(keys).to.have.lengthOf(3);
+    expect(keys[0]).to.equal('p1');
+    expect(keys[1]).to.equal('p2');
+    expect(keys[2]).to.equal('p3');
   });
 
   it('Should throw TypeError if "iteratorCallback is not a function"', () => {

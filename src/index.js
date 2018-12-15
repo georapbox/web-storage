@@ -36,22 +36,19 @@ export default class WebStorage {
    *
    * @this {WebStorage}
    * @param {String} key The property name of the saved item
-   * @param {Function} [onCompletedCallback = () => {}] Callback function to be executed after operation completed
+   * @param {Function} [onErrorCallback = () => {}] Callback function to be executed if an error occurs
    * @returns {*} Returns the retrieved value if found or `null` if value not found or operation has failed due to error
    */
-  getItem(key, onCompletedCallback = () => {}) {
+  getItem(key, onErrorCallback = () => {}) {
     let res = null;
-    let err = null;
 
     try {
       const item = this.options.driver.getItem(this.storeKeyPrefix + key);
       const parsed = JSON.parse(item);
       res = parsed;
     } catch (error) {
-      err = error;
+      onErrorCallback(error);
     }
-
-    onCompletedCallback(err, res);
 
     return res;
   }
@@ -62,21 +59,17 @@ export default class WebStorage {
    * @this {WebStorage}
    * @param {String} key The property name of the item to save
    * @param {*} value The item to save to the selected storage
-   * @param {Function} [onCompletedCallback = () => {}] Callback function to be executed after operation completed
+   * @param {Function} [onErrorCallback = () => {}] Callback function to be executed if an error occurs
    * @returns {undefined}
    */
-  setItem(key, value, onCompletedCallback = () => {}) {
-    let err = null;
-
+  setItem(key, value, onErrorCallback = () => {}) {
     key = this.storeKeyPrefix + key;
 
     try {
       this.options.driver.setItem(key, JSON.stringify(value));
     } catch (error) {
-      err = error;
+      onErrorCallback(error);
     }
-
-    onCompletedCallback(err);
   }
 
   /**
@@ -84,63 +77,50 @@ export default class WebStorage {
    *
    * @this {WebStorage}
    * @param {String} key The property name of the item to remove
-   * @param {Function} [onCompletedCallback = () => {}] Callback function to be executed after operation completed
+   * @param {Function} [onErrorCallback = () => {}] Callback function to be executed if an error occurs
    * @returns {undefined}
    */
-  removeItem(key, onCompletedCallback = () => {}) {
-    let err = null;
-
+  removeItem(key, onErrorCallback = () => {}) {
     try {
       this.options.driver.removeItem(this.storeKeyPrefix + key);
     } catch (error) {
-      err = error;
+      onErrorCallback(error);
     }
-
-    onCompletedCallback(err);
   }
 
   /**
    * Removes all saved items from storage
    *
    * @this {WebStorage}
-   * @param {Function} [onCompletedCallback = () => {}] Callback function to be executed after operation completed
+   * @param {Function} [onErrorCallback = () => {}] Callback function to be executed if an error occurs
    * @returns {undefined}
    */
-  clear(onCompletedCallback = () => {}) {
-    let err = null;
+  clear(onErrorCallback = () => {}) {
     const driver = this.options.driver;
 
     try {
       iterateStorage(this, driver.removeItem.bind(driver));
     } catch (error) {
-      err = error;
+      onErrorCallback(error);
     }
-
-    onCompletedCallback(err);
   }
 
   /**
    * Gets the list of all keys in the offline storage for a specific database
    *
    * @this {WebStorage}
-   * @param {Function} [onCompletedCallback = () => {}] Callback function to be executed after operation completed
+   * @param {Function} [onErrorCallback = () => {}] Callback function to be executed if an error occurs
    * @returns {Array|undefined} Returns an array of all the keys that belong to a specific database. If any error occurs, returns `undefined`.
    */
-  keys(onCompletedCallback = () => {}) {
-    let err = null;
+  keys(onErrorCallback = () => {}) {
     const res = [];
     const storeKeyPrefix = this.storeKeyPrefix;
 
     try {
       iterateStorage(this, key => res.push(removePrefix(key, storeKeyPrefix)));
-    } catch (error) {
-      err = error;
-    }
-
-    onCompletedCallback(err, err === null ? res : void 0);
-
-    if (err === null) {
       return res;
+    } catch (error) {
+      onErrorCallback(error);
     }
   }
 
@@ -148,23 +128,14 @@ export default class WebStorage {
    * Gets the number of items saved in a specific database
    *
    * @this {WebStorage}
-   * @param {Function} [onCompletedCallback = () => {}] Callback function to be executed after operation completed
+   * @param {Function} [onErrorCallback = () => {}] Callback function to be executed if an error occurs
    * @returns {Number|undefined} Returns the number of items for a specific database. If any error occurs, returns `undefined`.
    */
-  length(onCompletedCallback = () => {}) {
-    let err = null;
-    let res = 0;
-
+  length(onErrorCallback = () => {}) {
     try {
-      res = this.keys().length;
+      return this.keys().length;
     } catch (error) {
-      err = error;
-    }
-
-    onCompletedCallback(err, err === null ? res : void 0);
-
-    if (err === null) {
-      return res;
+      onErrorCallback(error);
     }
   }
 
@@ -174,18 +145,16 @@ export default class WebStorage {
    * @this {WebStorage}
    * @param {function} iteratorCallback A callabck function to be executed for each iteration
    *        `iteratorCallback` is called once for each pair, with the following arguments:
-   *        - {String} key The key of the saved item
    *        - {*} value The value of the saved item
-   * @param {Function} [onCompletedCallback = () => {}] Callback function to be executed after operation completed
+   *        - {String} key The key of the saved item
+   * @param {Function} [onErrorCallback = () => {}] Callback function to be executed if an error occurs
    * @throws {TypeError} If `iteratorCallback` is not a function
    * @returns {undefined}
    */
-  iterate(iteratorCallback, onCompletedCallback = () => {}) {
+  iterate(iteratorCallback, onErrorCallback = () => {}) {
     if (typeof iteratorCallback !== 'function') {
       throw new TypeError('"iteratorCallback" is expected to be a function');
     }
-
-    let err = null;
 
     const storeKeyPrefix = this.storeKeyPrefix;
 
@@ -193,12 +162,10 @@ export default class WebStorage {
       iterateStorage(this, (key, value) => {
         const _key = removePrefix(key, storeKeyPrefix);
         const _value = JSON.parse(value);
-        iteratorCallback.call(this, _key, _value);
+        iteratorCallback.call(this, _value, _key);
       });
     } catch (error) {
-      err = error;
+      onErrorCallback(error);
     }
-
-    onCompletedCallback(err);
   }
 }
