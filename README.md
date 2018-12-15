@@ -11,7 +11,6 @@ WebStorage is a JavaScript library that improves the way you work with `localSto
 
 The purpose of this library is to allow the user to manipulate data to `localStorage` or `sessionStorage` accordingly using a namespace (default is "web-storage") as a prefix for each item's key. This is by design in order to avoid potential conflicts with other key/value pairs that are probably already saved to storage. For example, if the database name we provided is `myApp`, calling `clear()` will remove only the items with key prefix `myApp`. The same principle applies to all available API methods of the library.
 
-
 ## Create new instance
 
 ### new WebStorage([options])
@@ -27,9 +26,19 @@ Creates a new instance of the WebStorage. The following options can be set:
 **Throws:** `TypeError` if `options.name` is not a string or empty string  
 **Throws:** `TypeError` if `options.keySeparator` is not a string or empty string
 
+**Example**
+
+```js
+const myStore = new WebStorage({
+  driver: sessionStorage,
+  name: 'my-storage',
+  keySeparator: '.'
+});
+```
+
 ## Public methods
 
-### getItem(key [, onCompletedCallback])
+### getItem(key [, onErrorCallback])
 
 Gets a saved item from storage by its key.
 
@@ -38,10 +47,18 @@ Gets a saved item from storage by its key.
 |Param|Type|Default|Description|
 |-----|----|-------|-----------|
 |key|`String`||The property name of the saved item|
-|[onCompletedCallback]|`Function`|`() => {}`|Callback function to be executed after operation completed|
+|[onErrorCallback]|`Function`|`() => {}`|Callback function to be executed if there were any errors|
 
+**Usage**
 
-### setItem(key, value [, onCompletedCallback])
+```js
+myStore.getItem('somekey', error => {
+  // This code runs if there were any errors
+  console.error(error);
+});
+```
+
+### setItem(key, value [, onErrorCallback])
 
 Saves an item to storage. You can store items of any of the following data types as long as data can be serialized to JSON.
 
@@ -56,10 +73,18 @@ Saves an item to storage. You can store items of any of the following data types
 |-----|----|-------|-----------|
 |key|`String`||The property name of the item to save|
 |value|`*`||The item to save to the selected storage.|
-|[onCompletedCallback]|`Function`|`() => {}`|Callback function to be executed after operation completed|
+|[onErrorCallback]|`Function`|`() => {}`|Callback function to be executed if there were any errors|
 
+**Usage**
 
-### removeItem(key [, onCompletedCallback])
+```js
+myStore.setItem('somekey', { foo: 'bar' }, error => {
+  // This code runs if there were any errors
+  console.error(error);
+});
+```
+
+### removeItem(key [, onErrorCallback])
 
 Removes the item for the specific key from the storage.
 
@@ -68,10 +93,18 @@ Removes the item for the specific key from the storage.
 |Param|Type|Default|Description|
 |-----|----|-------|-----------|
 |key|`String`||The property name of the item to remove|
-|[onCompletedCallback]|`Function`|`() => {}`|Callback function to be executed after operation completed|
+|[onErrorCallback]|`Function`|`() => {}`|Callback function to be executed if there were any errors|
 
+**Usage**
 
-### clear([onCompletedCallback])
+```js
+myStore.removeItem('somekey', error => {
+  // This code runs if there were any errors
+  console.error(error);
+});
+```
+
+### clear([onErrorCallback])
 
 Removes all saved items from storage.
 
@@ -79,10 +112,18 @@ Removes all saved items from storage.
 
 |Param|Type|Default|Description|
 |-----|----|-------|-----------|
-|[onCompletedCallback]|`Function`|`() => {}`|Callback function to be executed after operation completed|
+|[onErrorCallback]|`Function`|`() => {}`|Callback function to be executed if there were any errors|
 
+**Usage**
 
-### keys([onCompletedCallback])
+```js
+myStore.clear(error => {
+  // This code runs if there were any errors
+  console.error(error);
+});
+```
+
+### keys([onErrorCallback])
 
 Gets the list of all keys in the storage for a specific database.
 
@@ -90,10 +131,18 @@ Gets the list of all keys in the storage for a specific database.
 
 |Param|Type|Default|Description|
 |-----|----|-------|-----------|
-|[onCompletedCallback]|`Function`|`() => {}`|Callback function to be executed after operation completed|
+|[onErrorCallback]|`Function`|`() => {}`|Callback function to be executed if there were any errors|
 
+**Usage**
 
-### length([onCompletedCallback])
+```js
+myStore.keys(error => {
+  // This code runs if there were any errors
+  console.error(error);
+});
+```
+
+### length([onErrorCallback])
 
 Gets the number of items saved in a specific database.
 
@@ -101,10 +150,18 @@ Gets the number of items saved in a specific database.
 
 |Param|Type|Default|Description|
 |-----|----|-------|-----------|
-|[onCompletedCallback]|`Function`|`() => {}`|Callback function to be executed after operation completed|
+|[onErrorCallback]|`Function`|`() => {}`|Callback function to be executed if there were any errors|
 
+**Usage**
 
-### iterate(iteratorCallback [, onCompletedCallback])
+```js
+myStore.length(error => {
+  // This code runs if there were any errors
+  console.error(error);
+});
+```
+
+### iterate(iteratorCallback [, onErrorCallback])
 
 Iterate over all value/key pairs in datastore.
 
@@ -114,15 +171,26 @@ Iterate over all value/key pairs in datastore.
 |Param|Type|Default|Description|
 |-----|----|-------|-----------|
 |iteratorCallback|`Function`||A callabck function to be executed for each iteration|
-|[onCompletedCallback]|`Function`|`() => {}`|Callback function to be executed after operation completed|
+|[onErrorCallback]|`Function`|`() => {}`|Callback function to be executed if there were any errors|
 
 `iteratorCallback` is called once for each pair, with the following arguments:
 
 |Param|Type|Description|
 |-----|----|-----------|
-|key|`String`|The key of the saved item.|
 |value|`*`|The value of the saved item.|
+|key|`String`|The key of the saved item.|
 
+**Usage**
+
+```js
+myStore.iterate((value, key) => {
+  // Resulting key/value pair; this callback will be executed for every item in the database.
+  console.log(value, key);
+}, error => {
+  // This code runs if there were any errors
+  console.error(error);
+});
+```
 
 ## Development
 
@@ -144,11 +212,9 @@ $ npm run build
 $ npm test
 ```
 
-
 ## Changelog
 
 For API updates and breaking changes, check the [CHANGELOG](https://github.com/georapbox/web-storage/blob/master/CHANGELOG.md).
-
 
 ## License
 
