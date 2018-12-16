@@ -43,6 +43,7 @@ const myStore = new WebStorage({
 Gets a saved item from storage by its key.
 
 **Kind**: instance method of `WebStorage`  
+**Throws:** `TypeError` if `key` is not a string  
 **Returns:** `*` - Returns the retrieved value if found or `null` if value not found or operation has failed due to error
 
 |Param|Type|Default|Description|
@@ -69,6 +70,7 @@ Saves an item to storage. You can store items of any of the following data types
 - Object
 
 **Kind**: instance method of `WebStorage`  
+**Throws:** `TypeError` if `key` is not a string  
 **Returns:** `undefined`
 
 |Param|Type|Default|Description|
@@ -91,6 +93,7 @@ myStore.setItem('somekey', { foo: 'bar' }, error => {
 Removes the item for the specific key from the storage.
 
 **Kind**: instance method of `WebStorage`  
+**Throws:** `TypeError` if `key` is not a string  
 **Returns:** `undefined`
 
 |Param|Type|Default|Description|

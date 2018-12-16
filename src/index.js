@@ -1,5 +1,7 @@
 import removePrefix from './utils/remove-prefix';
 import assign from './utils/assign';
+import isString from './utils/is-string';
+import isFunction from './utils/is-function';
 import createKeyPrefix from './create-key-prefix';
 import iterateStorage from './iterate-storage';
 import ensureOptionsValidity from './ensure-options-validity';
@@ -37,9 +39,14 @@ class WebStorage {
    * @this {WebStorage}
    * @param {String} key The property name of the saved item
    * @param {Function} [onErrorCallback = () => {}] Callback function to be executed if an error occurs
+   * @throws {TypeError} Throws if `key` is not a string
    * @returns {*} Returns the retrieved value if found or `null` if value not found or operation has failed due to error
    */
   getItem(key, onErrorCallback = () => {}) {
+    if (!isString(key)) {
+      throw new TypeError('Failed to execute \'getItem\' on \'Storage\': The first argument must be a string.');
+    }
+
     let res = null;
 
     try {
@@ -60,10 +67,16 @@ class WebStorage {
    * @param {String} key The property name of the item to save
    * @param {*} value The item to save to the selected storage
    * @param {Function} [onErrorCallback = () => {}] Callback function to be executed if an error occurs
+   * @throws {TypeError} Throws if `key` is not a string
    * @returns {undefined}
    */
   setItem(key, value, onErrorCallback = () => {}) {
+    if (!isString(key)) {
+      throw new TypeError('Failed to execute \'setItem\' on \'Storage\': The first argument must be a string.');
+    }
+
     key = this.storeKeyPrefix + key;
+    value = value == null || isFunction(value) ? null : value;
 
     try {
       this.options.driver.setItem(key, JSON.stringify(value));
@@ -78,9 +91,14 @@ class WebStorage {
    * @this {WebStorage}
    * @param {String} key The property name of the item to remove
    * @param {Function} [onErrorCallback = () => {}] Callback function to be executed if an error occurs
+   * @throws {TypeError} Throws if `key` is not a string
    * @returns {undefined}
    */
   removeItem(key, onErrorCallback = () => {}) {
+    if (!isString(key)) {
+      throw new TypeError('Failed to execute \'setItem\' on \'Storage\': The first argument must be a string.');
+    }
+
     try {
       this.options.driver.removeItem(this.storeKeyPrefix + key);
     } catch (error) {
@@ -152,8 +170,8 @@ class WebStorage {
    * @returns {undefined}
    */
   iterate(iteratorCallback, onErrorCallback = () => {}) {
-    if (typeof iteratorCallback !== 'function') {
-      throw new TypeError('"iteratorCallback" is expected to be a function');
+    if (!isFunction(iteratorCallback)) {
+      throw new TypeError('Failed to iterate on \'Storage\': \'iteratorCallback\' must be a function.');
     }
 
     const storeKeyPrefix = this.storeKeyPrefix;

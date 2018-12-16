@@ -151,4 +151,21 @@ describe('WebStorage', () => {
 
     expect(WebStorage.isAvailable(localStorage)).to.equal(true);
   });
+
+  it('getItem should throw TypeError if first argument is not a string', () => {
+    expect(() => ls.getItem()).to.throw(TypeError);
+  });
+
+  it('setItem should throw TypeError if first argument is not a string', () => {
+    expect(() => ls.setItem()).to.throw(TypeError);
+  });
+
+  it('removeItem should throw TypeError if first argument is not a string', () => {
+    expect(() => ls.setItem()).to.throw(TypeError);
+  });
+
+  it('setItem should save null if second argument is a function', () => {
+    ls.setItem('somekey', () => {});
+    expect(ls.getItem('somekey')).to.equal(null);
+  });
 });
