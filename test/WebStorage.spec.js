@@ -45,11 +45,25 @@ describe('WebStorage', () => {
   });
 
   it('Should succesfully save and retrieve values to localStorage', () => {
-    ls.setItem('foo', {foo: 'bar'});
+    ls.setItem('p1', {foo: 'bar'});
+    ls.setItem('p2', [1, 2, 3]);
+    ls.setItem('p3', null);
+    ls.setItem('p4', void 0);
+    ls.setItem('p5', 10);
+    ls.setItem('p6', NaN);
+    ls.setItem('p7', Infinity);
+    ls.setItem('p8', -Infinity);
+    ls.setItem('p9', -0);
 
-    const val = ls.getItem('foo');
-
-    expect(val).to.eql({ foo: 'bar' });
+    expect(ls.getItem('p1')).to.eql({ foo: 'bar' });
+    expect(ls.getItem('p2')).to.eql([1, 2, 3]);
+    expect(ls.getItem('p3')).to.equal(null);
+    expect(ls.getItem('p4')).to.equal(null);
+    expect(ls.getItem('p5')).to.equal(10);
+    expect(ls.getItem('p6')).to.equal(null);
+    expect(ls.getItem('p7')).to.equal(null);
+    expect(ls.getItem('p8')).to.equal(null);
+    expect(ls.getItem('p9')).to.equal(0);
   });
 
   it('Should remove a saved item by its key', () => {
