@@ -96,7 +96,7 @@ class WebStorage {
    */
   removeItem(key, onErrorCallback = () => {}) {
     if (!isString(key)) {
-      throw new TypeError('Failed to execute \'setItem\' on \'Storage\': The first argument must be a string.');
+      throw new TypeError('Failed to execute \'removeItem\' on \'Storage\': The first argument must be a string.');
     }
 
     try {
