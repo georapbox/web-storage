@@ -4,7 +4,7 @@ import createKeyPrefix from './create-key-prefix';
 import iterateStorage from './iterate-storage';
 import ensureOptionsValidity from './ensure-options-validity';
 
-export default class WebStorage {
+class WebStorage {
   /**
    * WebStorage constructor
    *
@@ -169,3 +169,25 @@ export default class WebStorage {
     }
   }
 }
+
+/**
+ * Check if `storage` is supported and is available.
+ * Storage might be unavailable due to no browser support or due to being full or due to browser privacy settings.
+ *
+ * @static
+ * @param {Object} storage The storage type; available values `localStorage` or `sessionStorage`
+ * @returns {Boolean} Returns `true` if `storage` available; otherwise `false`
+ */
+WebStorage.isAvailable = storage => {
+  const key = '@georapbox/web-storage/test';
+
+  try {
+    storage.setItem(key, 'test');
+    storage.removeItem(key);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export default WebStorage;

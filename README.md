@@ -36,12 +36,13 @@ const myStore = new WebStorage({
 });
 ```
 
-## Public methods
+## Methods
 
 ### getItem(key [, onErrorCallback])
 
 Gets a saved item from storage by its key.
 
+**Kind**: instance method of `WebStorage`  
 **Returns:** `*` - Returns the retrieved value if found or `null` if value not found or operation has failed due to error
 
 |Param|Type|Default|Description|
@@ -67,6 +68,7 @@ Saves an item to storage. You can store items of any of the following data types
 - Array
 - Object
 
+**Kind**: instance method of `WebStorage`  
 **Returns:** `undefined`
 
 |Param|Type|Default|Description|
@@ -88,6 +90,7 @@ myStore.setItem('somekey', { foo: 'bar' }, error => {
 
 Removes the item for the specific key from the storage.
 
+**Kind**: instance method of `WebStorage`  
 **Returns:** `undefined`
 
 |Param|Type|Default|Description|
@@ -108,6 +111,7 @@ myStore.removeItem('somekey', error => {
 
 Removes all saved items from storage.
 
+**Kind**: instance method of `WebStorage`  
 **Returns:** `undefined`
 
 |Param|Type|Default|Description|
@@ -127,6 +131,7 @@ myStore.clear(error => {
 
 Gets the list of all keys in the storage for a specific database.
 
+**Kind**: instance method of `WebStorage`  
 **Returns:** `Array|undefined` - Returns an array of all the keys that belong to a specific database. If any error occurs, returns `undefined`.
 
 |Param|Type|Default|Description|
@@ -146,6 +151,7 @@ myStore.keys(error => {
 
 Gets the number of items saved in a specific database.
 
+**Kind**: instance method of `WebStorage`  
 **Returns:** `Number|undefined` - Returns the number of items for a specific database. If any error occurs, returns `undefined`.
 
 |Param|Type|Default|Description|
@@ -165,6 +171,7 @@ myStore.length(error => {
 
 Iterate over all value/key pairs in datastore.
 
+**Kind**: instance method of `WebStorage`  
 **Throws:** `TypeError` if `iteratorCallback` is not a function  
 **Returns:** `undefined`
 
@@ -190,6 +197,24 @@ myStore.iterate((value, key) => {
   // This code runs if there were any errors
   console.error(error);
 });
+```
+
+### WebStorage.isAvailable(storage)
+
+Check if `storage` is supported and is available.
+Storage might be unavailable due to no browser support or due to being full or due to browser privacy settings.
+
+**Kind**: static method of `WebStorage`  
+**Returns**: `Boolean` - Returns `true` if `storage` available; otherwise `false`
+
+|Param|Type|Description|
+|-----|----|-----------|
+|storage|`Object`|The storage type; available values `localStorage` or `sessionStorage`|
+
+**Usage**
+
+```js
+WebStorage.isAvailable(localStorage);
 ```
 
 ## Development

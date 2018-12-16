@@ -1,2 +1,3 @@
-- [ ] Add a `supports` method to check if driver is supported by browser
+#TODO
+
 - [ ] Test `onErrorCallback` for each method 

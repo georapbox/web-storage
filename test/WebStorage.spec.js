@@ -143,4 +143,12 @@ describe('WebStorage', () => {
 
     expect(ls2.length()).to.equal(2);
   });
+
+  it('Should check if localStorage is available', () => {
+    const fakeStore = void 0;
+
+    expect(WebStorage.isAvailable(fakeStore)).to.equal(false);
+
+    expect(WebStorage.isAvailable(localStorage)).to.equal(true);
+  });
 });
