@@ -1,4 +1,5 @@
 import chai from 'chai';
+import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import WebStorage from '../src';
 
@@ -9,13 +10,12 @@ chai.use(sinonChai);
 global.window = {};
 window.localStorage = global.localStorage;
 
-let ls;
+const ls = new WebStorage();
 
 describe('WebStorage', () => {
   beforeEach(() => {
     localStorage.clear();
     sessionStorage.clear();
-    ls = new WebStorage();
   });
 
   it('Should create a new instance', () => {
@@ -115,6 +115,29 @@ describe('WebStorage', () => {
     expect(keys[2]).to.equal('p3');
   });
 
+  it('Should call "onErrorCallback" functions for each method if Storage not available', () => {
+    const myStore = new WebStorage({
+      driver: null
+    });
+
+    const noop = () => {};
+
+    const onErrorCallback = sinon.spy();
+
+    myStore.setItem('p1', 'Item 1', onErrorCallback);
+    myStore.getItem('p1', onErrorCallback);
+    myStore.keys(onErrorCallback);
+    myStore.length(onErrorCallback);
+    myStore.iterate(noop, onErrorCallback);
+    myStore.removeItem('p1', onErrorCallback);
+    myStore.clear(onErrorCallback);
+
+    expect(onErrorCallback.called).to.equal(true);
+    expect(onErrorCallback.callCount).to.equal(7);
+
+    onErrorCallback.resetHistory();
+  });
+
   it('Should throw TypeError if "iteratorCallback is not a function"', () => {
     expect(() => ls.iterate()).to.throw(TypeError);
     expect(() => ls.iterate({})).to.throw(TypeError);
@@ -159,7 +182,7 @@ describe('WebStorage', () => {
   });
 
   it('Should check if localStorage is available', () => {
-    const fakeStore = void 0;
+    const fakeStore = null;
 
     expect(WebStorage.isAvailable(fakeStore)).to.equal(false);
 
@@ -175,7 +198,7 @@ describe('WebStorage', () => {
   });
 
   it('removeItem should throw TypeError if first argument is not a string', () => {
-    expect(() => ls.setItem()).to.throw(TypeError);
+    expect(() => ls.removeItem()).to.throw(TypeError);
   });
 
   it('setItem should save null if second argument is a function', () => {
