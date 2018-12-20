@@ -220,7 +220,51 @@ Storage might be unavailable due to no browser support or due to being full or d
 WebStorage.isAvailable(localStorage);
 ```
 
-## Development
+## Full usage example
+
+```js
+const webStorage = new WebStorage({
+  name: 'my-store
+});
+
+const onError = error => console.error(error);
+
+webStorage.setItem('user1', { id: 1, name: 'John Doe' }, onError);
+
+webStorage.setItem('user2', { id: 2, name: 'Tim Smith' }, onError);
+
+localStorage.setItem('user3', JSON.stringify({ id: 3, name: 'Alice Cooper' }));
+
+webStorage.getItem('user1'); // -> { id: 1, name: 'John Doe' }
+
+webStorage.getItem('user2'); // -> { id: 2, name: 'Tim Smith' }
+
+webStorage.keys();  // -> ['user1', 'user2']
+
+webStorage.length(); // -> 2
+
+localStorage.length(); // -> 3
+
+webStorage.iterate((value, key) => {
+  console.log(value, '-', key);
+  // -> { id: 1, name: 'John Doe' } - 'user1'
+  // -> { id: 2, name: 'Tim Smith' } - 'user2'
+});
+
+webStorage.removeItem('user1');
+
+webStorage.getItem('user1'); // -> null
+
+webStorage.clear();
+
+webStorage.keys(); // -> []
+
+webStorage.length(); // -> 0
+
+localStorage.length(); // -> 1
+```
+
+## For development
 
 ### Build for development
 
