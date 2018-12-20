@@ -20,8 +20,10 @@ Creates a new instance of the WebStorage. The following options can be set:
 |Option|Type|Default|Description|
 |------|----|-------|-----------|
 |**driver**|`Object`|`localStorage`|The preferred driver to use. Use one between `localStorage` and `sessionStorage`.|
-|**name**|`String`|`"web-storage"`|The name of the database. This is used as prefix for all keys stored in the offline storage.|
-|**keySeparator**|`String`|`"/"`|String that separates database name and key.|
+|**name<sup>1</sup>**|`String`|`"web-storage"`|The name of the database. This is used as prefix for all keys stored in the offline storage.|
+|**keySeparator<sup>1</sup>**|`String`|`"/"`|String that separates database name and key.|
+
+**<sup>1</sup>** Both `name` and `keySeparator` need to be declared only when creating an instance of `WebStorage`. Afterwards, when using any of the API methods that accept `key` as argument, we just use the key to refer to the item we want to manipulate.
 
 **Throws:** `TypeError` if `options.name` is not a string or empty string  
 **Throws:** `TypeError` if `options.keySeparator` is not a string or empty string
@@ -223,8 +225,15 @@ WebStorage.isAvailable(localStorage);
 ## Full usage example
 
 ```js
+//
+// NOTE: The example below assumes that we begin with empty localStorage.
+//
+
+// Create a new instance of WebStorage using localStorage for driver (default),
+// 'my-store' for prefixing keys and ':' for separating the key prefix by the actual key.
 const webStorage = new WebStorage({
-  name: 'my-store'
+  name: 'my-store',
+  keySeparator: ':'
 });
 
 const onError = error => console.error(error);
@@ -238,6 +247,8 @@ localStorage.setItem('user3', JSON.stringify({ id: 3, name: 'Alice Cooper' }));
 webStorage.getItem('user1'); // -> { id: 1, name: 'John Doe' }
 
 webStorage.getItem('user2'); // -> { id: 2, name: 'Tim Smith' }
+
+webStorage.getItem('user3'); // -> null
 
 webStorage.keys();  // -> ['user1', 'user2']
 
