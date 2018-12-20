@@ -224,7 +224,7 @@ WebStorage.isAvailable(localStorage);
 
 ```js
 const webStorage = new WebStorage({
-  name: 'my-store
+  name: 'my-store'
 });
 
 const onError = error => console.error(error);
