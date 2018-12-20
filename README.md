@@ -23,7 +23,7 @@ Creates a new instance of the WebStorage. The following options can be set:
 |**name<sup>1</sup>**|`String`|`"web-storage"`|The name of the database. This is used as prefix for all keys stored in the offline storage.|
 |**keySeparator<sup>1</sup>**|`String`|`"/"`|String that separates database name and key.|
 
-**<sup>1</sup>** Both `name` and `keySeparator` need to be declared only when creating an instance of `WebStorage`. Afterwards, when using any of the API methods that accept `key` as argument, we just use the key to refer to the item we want to manipulate.
+**<sup>1</sup>** *Both `name` and `keySeparator` need to be declared only when creating an instance of `WebStorage`. Afterwards, when using any of the API methods that accept `key` as argument, we just use the key to refer to the item we want to manipulate.*
 
 **Throws:** `TypeError` if `options.name` is not a string or empty string  
 **Throws:** `TypeError` if `options.keySeparator` is not a string or empty string
