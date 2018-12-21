@@ -7,6 +7,8 @@ const { expect } = chai;
 
 chai.use(sinonChai);
 
+const DEFAULT_KEY_PREFIX = 'web-storage/';
+
 global.window = {};
 window.localStorage = global.localStorage;
 
@@ -23,25 +25,27 @@ describe('WebStorage', () => {
   });
 
   it('Should create a new instance with a new namespace', () => {
-    expect(new WebStorage({name: 'MyApp'}).storeKeyPrefix).to.equal('MyApp/');
+    expect(new WebStorage({
+      keyPrefix: 'MyApp/'
+    }).options.keyPrefix).to.equal('MyApp/');
   });
 
-  it('should throw TypeError if "options.name" is not a string or an empty string', () => {
-    expect(() => new WebStorage({ name: '' })).to.throw(TypeError);
-    expect(() => new WebStorage({ name: ' ' })).to.throw(TypeError);
-    expect(() => new WebStorage({ name: [] })).to.throw(TypeError);
-    expect(() => new WebStorage({ name: {} })).to.throw(TypeError);
-    expect(() => new WebStorage({ name: null })).to.throw(TypeError);
-    expect(() => new WebStorage({ name: void 0 })).to.throw(TypeError);
+  it('Should leave default key prefix if "keyPrefix" provided by user is not of type string or empty string', () => {
+    expect(new WebStorage({ keyPrefix: '' }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
+    expect(new WebStorage({ keyPrefix: '   ' }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
+    expect(new WebStorage({ keyPrefix: {} }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
+    expect(new WebStorage({ keyPrefix: [] }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
+    expect(new WebStorage({ keyPrefix: null }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
+    expect(new WebStorage({ keyPrefix: void 0 }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
+    expect(new WebStorage({ keyPrefix: 10 }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
+    expect(new WebStorage({ keyPrefix: NaN }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
+    expect(new WebStorage({ keyPrefix: Infinity }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
   });
 
-  it('sould throw TypeError if "options.keySeparator" is not a string or an empty string', () => {
-    expect(() => new WebStorage({ keySeparator: '' })).to.throw(TypeError);
-    expect(() => new WebStorage({ keySeparator: ' ' })).to.throw(TypeError);
-    expect(() => new WebStorage({ keySeparator: [] })).to.throw(TypeError);
-    expect(() => new WebStorage({ keySeparator: {} })).to.throw(TypeError);
-    expect(() => new WebStorage({ keySeparator: null })).to.throw(TypeError);
-    expect(() => new WebStorage({ keySeparator: void 0 })).to.throw(TypeError);
+  it('Should trim (left and right) the "keyPrefix"', () => {
+    expect(new WebStorage({ keyPrefix: ' my-app ' }).options.keyPrefix).to.equal('my-app');
+    expect(new WebStorage({ keyPrefix: ' my-app' }).options.keyPrefix).to.equal('my-app');
+    expect(new WebStorage({ keyPrefix: 'my-app ' }).options.keyPrefix).to.equal('my-app');
   });
 
   it('Should succesfully save and retrieve values to localStorage', () => {
@@ -162,11 +166,11 @@ describe('WebStorage', () => {
 
   it('Should return the length of saved items for a specific database', () => {
     const ls1 = new WebStorage({
-      name: 'App1'
+      keyPrefix: 'App1/'
     });
 
     const ls2 = new WebStorage({
-      name: 'App2'
+      keyPrefix: 'App2'
     });
 
     ls1.setItem('p1', 'Item 1');

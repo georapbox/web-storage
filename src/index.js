@@ -1,10 +1,9 @@
+import trim from './utils/trim';
 import removePrefix from './utils/remove-prefix';
 import assign from './utils/assign';
 import isString from './utils/is-string';
 import isFunction from './utils/is-function';
-import createKeyPrefix from './create-key-prefix';
 import iterateStorage from './iterate-storage';
-import ensureOptionsValidity from './ensure-options-validity';
 
 class WebStorage {
   /**
@@ -12,8 +11,10 @@ class WebStorage {
    *
    * @constructor
    * @param {Object} [options] Object that contains config options to extend defaults.
-   * @throws {TypeError} If `options.name` is not a string or an empty string.
-   * @throws {TypeError} If `options.keySeparator` is not a string or an empty string.
+   * @param {Object} [options.driver=localStorage] The preferred driver to use. Use one between `localStorage` and `sessionStorage`.
+   * @param {String} [options.keyPrefix='web-storage/'] The prefix for all keys stored in the offline storage.
+   *                 If provided any value that is not of type string, or an empty string (`''`) the default value will be used.
+   *                 Keep in mind that the value provided is trimmed internally (both left and right) to avoid potential user mistakes.
    */
   constructor(options) {
     /**
@@ -23,14 +24,14 @@ class WebStorage {
      */
     const defaults = {
       driver: localStorage,
-      name: 'web-storage',
-      keySeparator: '/'
+      keyPrefix: 'web-storage/'
     };
 
-    options = assign({}, defaults, options);
-    ensureOptionsValidity(options);
-    this.options = options;
-    this.storeKeyPrefix = createKeyPrefix(this);
+    this.options = assign({}, defaults, options);
+
+    this.options.keyPrefix = !isString(this.options.keyPrefix) || trim(this.options.keyPrefix) === ''
+      ? defaults.keyPrefix
+      : trim(this.options.keyPrefix);
   }
 
   /**
@@ -50,7 +51,7 @@ class WebStorage {
     let res = null;
 
     try {
-      const item = this.options.driver.getItem(this.storeKeyPrefix + key);
+      const item = this.options.driver.getItem(this.options.keyPrefix + key);
       const parsed = JSON.parse(item);
       res = parsed;
     } catch (error) {
@@ -75,7 +76,7 @@ class WebStorage {
       throw new TypeError('Failed to execute \'setItem\' on \'Storage\': The first argument must be a string.');
     }
 
-    key = this.storeKeyPrefix + key;
+    key = this.options.keyPrefix + key;
     value = value == null || isFunction(value) ? null : value;
 
     try {
@@ -99,8 +100,10 @@ class WebStorage {
       throw new TypeError('Failed to execute \'removeItem\' on \'Storage\': The first argument must be a string.');
     }
 
+    const keyPrefix = this.options.keyPrefix;
+
     try {
-      this.options.driver.removeItem(this.storeKeyPrefix + key);
+      this.options.driver.removeItem(keyPrefix + key);
     } catch (error) {
       onErrorCallback(error);
     }
@@ -124,18 +127,18 @@ class WebStorage {
   }
 
   /**
-   * Gets the list of all keys in the offline storage for a specific database
+   * Gets the list of all keys in the offline storage for a specific datastore
    *
    * @this {WebStorage}
    * @param {Function} [onErrorCallback = () => {}] Callback function to be executed if an error occurs
-   * @returns {Array|undefined} Returns an array of all the keys that belong to a specific database. If any error occurs, returns `undefined`.
+   * @returns {Array|undefined} Returns an array of all the keys that belong to a specific datastore. If any error occurs, returns `undefined`.
    */
   keys(onErrorCallback = () => {}) {
     const res = [];
-    const storeKeyPrefix = this.storeKeyPrefix;
+    const keyPrefix = this.options.keyPrefix;
 
     try {
-      iterateStorage(this, key => res.push(removePrefix(key, storeKeyPrefix)));
+      iterateStorage(this, key => res.push(removePrefix(key, keyPrefix)));
       return res;
     } catch (error) {
       onErrorCallback(error);
@@ -143,11 +146,11 @@ class WebStorage {
   }
 
   /**
-   * Gets the number of items saved in a specific database
+   * Gets the number of items saved in a specific datastore
    *
    * @this {WebStorage}
    * @param {Function} [onErrorCallback = () => {}] Callback function to be executed if an error occurs
-   * @returns {Number|undefined} Returns the number of items for a specific database. If any error occurs, returns `undefined`.
+   * @returns {Number|undefined} Returns the number of items for a specific datastore. If any error occurs, returns `undefined`.
    */
   length(onErrorCallback = () => {}) {
     try {
@@ -174,11 +177,11 @@ class WebStorage {
       throw new TypeError('Failed to iterate on \'Storage\': \'iteratorCallback\' must be a function.');
     }
 
-    const storeKeyPrefix = this.storeKeyPrefix;
+    const keyPrefix = this.options.keyPrefix;
 
     try {
       iterateStorage(this, (key, value) => {
-        const _key = removePrefix(key, storeKeyPrefix);
+        const _key = removePrefix(key, keyPrefix);
         const _value = JSON.parse(value);
         iteratorCallback.call(this, _value, _key);
       });

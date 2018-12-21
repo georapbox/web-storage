@@ -9,7 +9,7 @@ import beginsWith from './utils/begins-with';
  * @return {Boolean} Returns true if key belongs to a database else returns false.
  */
 function keyBelongsToDB(instance, key) {
-  return beginsWith(key, instance.storeKeyPrefix);
+  return beginsWith(key, instance.options.keyPrefix);
 }
 
 export default keyBelongsToDB;
