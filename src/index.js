@@ -13,7 +13,7 @@ class WebStorage {
    * @param {Object} [options] Object that contains config options to extend defaults.
    * @param {Object} [options.driver=localStorage] The preferred driver to use. Use one between `localStorage` and `sessionStorage`.
    * @param {String} [options.keyPrefix='web-storage/'] The prefix for all keys stored in the offline storage.
-   *                 If provided any value that is not of type string, or an empty string (`''`) the default value will be used.
+   *                 If the value provided is not of type string, or an empty string (`''`) the default value will be used.
    *                 Keep in mind that the value provided is trimmed internally (both left and right) to avoid potential user mistakes.
    */
   constructor(options) {

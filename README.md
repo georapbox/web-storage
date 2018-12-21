@@ -1,15 +1,21 @@
-<!-- [![npm version](https://img.shields.io/npm/v/@georapbox/web-storage.svg)](https://www.npmjs.com/package/@georapbox/web-storage) -->
+[![npm version](https://img.shields.io/npm/v/@georapbox/web-storage.svg)](https://www.npmjs.com/package/@georapbox/web-storage)
 [![Build Status](https://travis-ci.org/georapbox/web-storage.svg?branch=master)](https://travis-ci.org/georapbox/web-storage)
 [![Codecov](https://img.shields.io/codecov/c/github/georapbox/web-storage/master.svg)](https://codecov.io/gh/georapbox/web-storage)
 [![Dependencies](https://david-dm.org/georapbox/web-storage.svg)](https://david-dm.org/georapbox/web-storage)
 [![devDependency Status](https://david-dm.org/georapbox/web-storage/dev-status.svg)](https://david-dm.org/georapbox/web-storage#info=devDependencies)
-<!-- [![npm license](https://img.shields.io/npm/l/@georapbox/web-storage.svg)](https://www.npmjs.com/package/@georapbox/web-storage) -->
+[![npm license](https://img.shields.io/npm/l/@georapbox/web-storage.svg)](https://www.npmjs.com/package/@georapbox/web-storage)
 
 # WebStorage
 
 WebStorage is a JavaScript library that improves the way you work with `localStorage` or `sessionStorage` by using a simple, `localStorage`-like API. It allows developers to store many types of data instead of just strings.
 
-The purpose of this library is to allow the user to manipulate data to `localStorage` or `sessionStorage` accordingly using a namespace (default is "web-storage/") as a prefix for each item's key. This is by design in order to avoid potential conflicts with other key/value pairs that are probably already saved to storage. For example, if the key prefix we provided is `my-app/`, calling `clear()` will remove only the items with key prefix `my-app/`. The same principle applies to all available API methods of the library.
+The purpose of this library is to allow the user to manipulate data to `localStorage` or `sessionStorage` accordingly using a namespace (default is `'web-storages/'`) as a prefix for each item's key. This is by design in order to avoid potential conflicts with other key/value pairs that are probably already saved to storage. For example, if the key prefix we provided is `'my-app/'`, calling `clear()` will remove only the items with key prefix `'my-app/'`. The same principle applies to all available API methods of the library.
+
+## Install
+
+```sh
+$ npm install --save @georapbox/web-storage
+```
 
 ## Create new instance
 
@@ -20,7 +26,7 @@ Creates a new instance of the WebStorage. The following options can be set:
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
 | **driver** | `Object` | `localStorage` | The preferred driver to use. Use one between `localStorage` and `sessionStorage`. |
-| **keyPrefix<sup>1</sup>** | `String` | `"web-storage/"` | The prefix for all keys stored in the offline storage. If provided any value that is not of type string or empty string (`''`), the default value will be used. Keep in mind that the value provided is trimmed (both left and right) internally to avoid potential user mistakes. |
+| **keyPrefix<sup>1</sup>** | `String` | `"web-storage/"` | The prefix for all keys stored in the offline storage. If the value provided is not of type string or empty string (`''`), the default value will be used. Keep in mind that the value provided is trimmed (both left and right) internally to avoid potential user mistakes. |
 
 **<sup>1</sup>** *`keyPrefix` needs to be declared only when creating an instance of `WebStorage`. Afterwards, when using any of the API methods that accept `key` as argument, we just use the key to refer to the item we want to manipulate.*
 
@@ -272,19 +278,23 @@ localStorage.length(); // -> 1
 
 ### Build for development
 
-```bash
+```sh
 $ npm run dev
 ```
 
+A UMD bundle `WebStorage.js` is generated and saved under the `dist/` directory.
+
 ### Build for production
 
-```bash
+```sh
 $ npm run build
 ```
 
+An uglified UMD bundle `WebStorage.min.js` is generated and saved under the `dist/` directory.
+
 ### Test
 
-```bash
+```sh
 $ npm test
 ```
 
