@@ -12,7 +12,7 @@ const DEFAULT_KEY_PREFIX = 'web-storage/';
 global.window = {};
 window.localStorage = global.localStorage;
 
-const ls = new WebStorage();
+const ls = WebStorage.createInstance();
 
 describe('WebStorage', () => {
   beforeEach(() => {

@@ -211,4 +211,6 @@ WebStorage.isAvailable = storage => {
   }
 };
 
+WebStorage.createInstance = options => new WebStorage(options);
+
 export default WebStorage;
