@@ -1,6 +1,6 @@
 {
   "name": "@georapbox/web-storage",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "WebStorage is a JavaScript library that improves the way you work with localStorage or sessionStorage using a simple, localStorage-like API. It allows developers to store many types of data instead of just strings.",
   "browser": "dist/WebStorage.js",
   "files": [
