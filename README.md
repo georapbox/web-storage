@@ -17,9 +17,9 @@ The purpose of this library is to allow the user to manipulate data to `localSto
 $ npm install --save @georapbox/web-storage
 ```
 
-## Create new instance
+## Static methods
 
-### new WebStorage([options])
+### WebStorage.createInstance([options])
 
 Creates a new instance of the WebStorage. The following options can be set:
 
@@ -39,7 +39,25 @@ const myStore = new WebStorage({
 });
 ```
 
-## Methods
+### WebStorage.isAvailable(storage)
+
+Check if `storage` is supported and is available.
+Storage might be unavailable due to no browser support or due to being full or due to browser privacy settings.
+
+**Kind**: static method of `WebStorage`  
+**Returns**: `Boolean` - Returns `true` if `storage` available; otherwise `false`
+
+| Param | Type | Description |
+| ----- | ---- | ----------- |
+| storage | `Object` | The storage type; available values `localStorage` or `sessionStorage` |
+
+**Usage**
+
+```js
+WebStorage.isAvailable(localStorage);
+```
+
+## Instance methods
 
 ### getItem(key [, onErrorCallback])
 
@@ -203,24 +221,6 @@ myStore.iterate((value, key) => {
   // This code runs if there were any errors
   console.error(error);
 });
-```
-
-### WebStorage.isAvailable(storage)
-
-Check if `storage` is supported and is available.
-Storage might be unavailable due to no browser support or due to being full or due to browser privacy settings.
-
-**Kind**: static method of `WebStorage`  
-**Returns**: `Boolean` - Returns `true` if `storage` available; otherwise `false`
-
-| Param | Type | Description |
-| ----- | ---- | ----------- |
-| storage | `Object` | The storage type; available values `localStorage` or `sessionStorage` |
-
-**Usage**
-
-```js
-WebStorage.isAvailable(localStorage);
 ```
 
 ## Full usage example
