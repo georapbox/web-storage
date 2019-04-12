@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/georapbox/web-storage.svg?branch=master)](https://travis-ci.org/georapbox/web-storage)
 [![Codecov](https://img.shields.io/codecov/c/github/georapbox/web-storage/master.svg)](https://codecov.io/gh/georapbox/web-storage)
 [![Dependencies](https://david-dm.org/georapbox/web-storage.svg)](https://david-dm.org/georapbox/web-storage)
-[![devDependency Status](https://david-dm.org/georapbox/web-storage/dev-status.svg)](https://david-dm.org/georapbox/web-storage#info=devDependencies)
+[![devDependency Status](https://david-dm.org/georapbox/web-storage/dev-status.svg)](https://david-dm.org/georapbox/web-storage?type=dev)
 [![npm license](https://img.shields.io/npm/l/@georapbox/web-storage.svg)](https://www.npmjs.com/package/@georapbox/web-storage)
 
 # WebStorage
