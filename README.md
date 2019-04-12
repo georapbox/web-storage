@@ -33,7 +33,7 @@ Creates a new instance of the WebStorage. The following options can be set:
 **Example**
 
 ```js
-const myStore = new WebStorage({
+const myStore = WebStorage.createInstance({
   driver: sessionStorage,
   keyPrefix: 'my-storage/'
 });
