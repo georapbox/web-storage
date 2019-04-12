@@ -33,7 +33,7 @@ Creates a new instance of the WebStorage. The following options can be set:
 **Example**
 
 ```js
-const myStore = new WebStorage({
+const myStore = WebStorage.createInstance({
   driver: sessionStorage,
   keyPrefix: 'my-storage/'
 });
@@ -282,7 +282,7 @@ localStorage.length(); // -> 1
 $ npm run dev
 ```
 
-A UMD bundle `WebStorage.js` is generated and saved under the `dist/` directory.
+Builds the library for development and watches for any changes.
 
 ### Build for production
 
@@ -290,7 +290,7 @@ A UMD bundle `WebStorage.js` is generated and saved under the `dist/` directory.
 $ npm run build
 ```
 
-An uglified UMD bundle `WebStorage.min.js` is generated and saved under the `dist/` directory.
+Builds the library for production; creates library bundles (`UMD`, `ESM`, `CommonJS`) under the `dist/` directory.
 
 ### Test
 
