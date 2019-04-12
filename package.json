@@ -56,5 +56,13 @@
     "sinon": "~7.3.1",
     "sinon-chai": "~3.3.0"
   },
-  "browserslist": "> 0.5%, last 2 versions, Firefox ESR, not dead"
+  "browserslist": "> 0.5%, last 2 versions, Firefox ESR, not dead",
+  "nyc": {
+    "exclude": [
+      "**/*.spec.js",
+      ".babelrc.js",
+      "rollup.config.js",
+      "dist"
+    ]
+  }
 }
