@@ -19,14 +19,14 @@ $ npm install --save @georapbox/web-storage
 
 ## Static methods
 
-### WebStorage.createInstance([options])
+### WebStorage.createInstance(options = {})
 
 Creates a new instance of the WebStorage. The following options can be set:
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
-| **driver** | `Object` | `localStorage` | The preferred driver to use. Use one between `localStorage` and `sessionStorage`. |
-| **keyPrefix<sup>1</sup>** | `String` | `"web-storage/"` | The prefix for all keys stored in the offline storage. If the value provided is not of type string or empty string (`''`), the default value will be used. Keep in mind that the value provided is trimmed (both left and right) internally to avoid potential user mistakes. |
+| **driver** | `String` | "localStorage" | The preferred driver to use. Use one between "localStorage" or "sessionStorage". |
+| **keyPrefix<sup>1</sup>** | `String` | "web-storage/" | The prefix for all keys stored in the offline storage. The value provided is trimmed (both left and right) internally to avoid potential user mistakes. |
 
 **<sup>1</sup>** *`keyPrefix` needs to be declared only when creating an instance of `WebStorage`. Afterwards, when using any of the API methods that accept `key` as argument, we just use the key to refer to the item we want to manipulate.*
 
@@ -34,27 +34,27 @@ Creates a new instance of the WebStorage. The following options can be set:
 
 ```js
 const myStore = WebStorage.createInstance({
-  driver: sessionStorage,
+  driver: 'sessionStorage',
   keyPrefix: 'my-storage/'
 });
 ```
 
-### WebStorage.isAvailable(storage)
+### WebStorage.isAvailable(storageType)
 
-Check if `storage` is supported and is available.
+Check if `storageType` is supported and is available.
 Storage might be unavailable due to no browser support or due to being full or due to browser privacy settings.
 
 **Kind**: static method of `WebStorage`  
-**Returns**: `Boolean` - Returns `true` if `storage` available; otherwise `false`
+**Returns**: `Boolean` - Returns `true` if Storage available; otherwise `false`
 
 | Param | Type | Description |
 | ----- | ---- | ----------- |
-| storage | `Object` | The storage type; available values `localStorage` or `sessionStorage` |
+| storageType | `String` | The storage type; available values "localStorage" or "sessionStorage" |
 
 **Usage**
 
 ```js
-WebStorage.isAvailable(localStorage);
+WebStorage.isAvailable('localStorage');
 ```
 
 ## Instance methods
@@ -231,7 +231,7 @@ myStore.iterate((value, key) => {
 //
 
 // Create a new instance of WebStorage using localStorage for driver (default) and 'my-store/' for prefixing keys
-const webStorage = new WebStorage({
+const webStorage = WebStorage.createInstance({
   keyPrefix: 'my-store/'
 });
 
