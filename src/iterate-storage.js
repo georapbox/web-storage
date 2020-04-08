@@ -8,7 +8,7 @@ import keyBelongsToDB from './key-belongs-to-db';
  * @return {undefined}
  */
 function iterateStorage(instance, callback) {
-  const driver = instance.options.driver;
+  const driver = instance._driver;
 
   Object.keys(driver).forEach(function (key) {
     if (keyBelongsToDB(instance, key)) {
