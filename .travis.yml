@@ -1,13 +1,7 @@
 language: node_js
 node_js:
   - '12'
-branches:
-  only:
-    - master
-before_install:
-  - npm i -g codecov
 install:
   - npm install
 script:
   - npm run clean && npm run lint && npm test && npm run build
-  - codecov
