@@ -1,13 +1,11 @@
 import chai from 'chai';
-import sinon from 'sinon';
+// import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import WebStorage from '../src';
 
 const { expect } = chai;
 
 chai.use(sinonChai);
-
-const DEFAULT_KEY_PREFIX = 'web-storage/';
 
 global.window = {};
 window.localStorage = global.localStorage;
@@ -27,25 +25,30 @@ describe('WebStorage', () => {
   it('Should create a new instance with a new namespace', () => {
     expect(new WebStorage({
       keyPrefix: 'MyApp/'
-    }).options.keyPrefix).to.equal('MyApp/');
+    })._keyPrefix).to.equal('MyApp/');
   });
 
-  it('Should leave default key prefix if "keyPrefix" provided by user is not of type string or empty string', () => {
-    expect(new WebStorage({ keyPrefix: '' }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
-    expect(new WebStorage({ keyPrefix: '   ' }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
-    expect(new WebStorage({ keyPrefix: {} }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
-    expect(new WebStorage({ keyPrefix: [] }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
-    expect(new WebStorage({ keyPrefix: null }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
-    expect(new WebStorage({ keyPrefix: void 0 }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
-    expect(new WebStorage({ keyPrefix: 10 }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
-    expect(new WebStorage({ keyPrefix: NaN }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
-    expect(new WebStorage({ keyPrefix: Infinity }).options.keyPrefix).to.equal(DEFAULT_KEY_PREFIX);
+  it('Should create a new instance with default options if not provided by user', () => {
+    expect(new WebStorage()._storageType).to.equal('localStorage');
+    expect(new WebStorage()._keyPrefix).to.equal('web-storage/');
+  });
+
+  it('Should throw Error if driver option is not "localStorage" or "sessionStorage"', () => {
+    expect(() => new WebStorage({
+      driver: 'fakeStorage'
+    })).to.throw(Error);
+  });
+
+  it('Should throw TypeError if keyPrefix option is not a string', () => {
+    expect(() => new WebStorage({
+      keyPrefix: null
+    })).to.throw(TypeError);
   });
 
   it('Should trim (left and right) the "keyPrefix"', () => {
-    expect(new WebStorage({ keyPrefix: ' my-app ' }).options.keyPrefix).to.equal('my-app');
-    expect(new WebStorage({ keyPrefix: ' my-app' }).options.keyPrefix).to.equal('my-app');
-    expect(new WebStorage({ keyPrefix: 'my-app ' }).options.keyPrefix).to.equal('my-app');
+    expect(new WebStorage({ keyPrefix: ' my-app ' })._keyPrefix).to.equal('my-app');
+    expect(new WebStorage({ keyPrefix: ' my-app' })._keyPrefix).to.equal('my-app');
+    expect(new WebStorage({ keyPrefix: 'my-app ' })._keyPrefix).to.equal('my-app');
   });
 
   it('Should succesfully save and retrieve values to localStorage', () => {
@@ -119,29 +122,6 @@ describe('WebStorage', () => {
     expect(keys[2]).to.equal('p3');
   });
 
-  it('Should call "onErrorCallback" functions for each method if Storage not available', () => {
-    const myStore = new WebStorage({
-      driver: null
-    });
-
-    const noop = () => {};
-
-    const onErrorCallback = sinon.spy();
-
-    myStore.setItem('p1', 'Item 1', onErrorCallback);
-    myStore.getItem('p1', onErrorCallback);
-    myStore.keys(onErrorCallback);
-    myStore.length(onErrorCallback);
-    myStore.iterate(noop, onErrorCallback);
-    myStore.removeItem('p1', onErrorCallback);
-    myStore.clear(onErrorCallback);
-
-    expect(onErrorCallback.called).to.equal(true);
-    expect(onErrorCallback.callCount).to.equal(7);
-
-    onErrorCallback.resetHistory();
-  });
-
   it('Should throw TypeError if "iteratorCallback is not a function"', () => {
     expect(() => ls.iterate()).to.throw(TypeError);
     expect(() => ls.iterate({})).to.throw(TypeError);
@@ -186,11 +166,9 @@ describe('WebStorage', () => {
   });
 
   it('Should check if localStorage is available', () => {
-    const fakeStore = null;
+    expect(WebStorage.isAvailable('fakeStorage')).to.equal(false);
 
-    expect(WebStorage.isAvailable(fakeStore)).to.equal(false);
-
-    expect(WebStorage.isAvailable(localStorage)).to.equal(true);
+    expect(WebStorage.isAvailable('localStorage')).to.equal(true);
   });
 
   it('getItem should throw TypeError if first argument is not a string', () => {
