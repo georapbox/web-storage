@@ -1,8 +1,8 @@
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
 import { terser } from 'rollup-plugin-terser';
 import pkg from './package.json';
 
-const libraryName = 'WebStorage';
+const LIBRARY_NAME = 'WebStorage';
 
 const banner = `/*!
  * ${pkg.name}
@@ -15,69 +15,63 @@ const banner = `/*!
  * @license ${pkg.license}
  */`;
 
+const makeConfig = (env = 'development') => {
+  let bundleSuffix = '';
+
+  if (env === 'production') {
+    bundleSuffix = 'min.';
+  }
+
+  const config = {
+    input: 'src/index.js',
+    output: [
+      {
+        banner,
+        name: LIBRARY_NAME,
+        file: `dist/${LIBRARY_NAME}.umd.${bundleSuffix}js`, // UMD
+        format: 'umd',
+        exports: 'auto'
+      },
+      {
+        banner,
+        file: `dist/${LIBRARY_NAME}.cjs.${bundleSuffix}js`, // CommonJS
+        format: 'cjs',
+        exports: 'default'
+      },
+      {
+        banner,
+        file: `dist/${LIBRARY_NAME}.esm.${bundleSuffix}js`, // ESM
+        format: 'es',
+        exports: 'auto'
+      }
+    ],
+    plugins: [
+      babel({
+        babelHelpers: 'bundled',
+        exclude: ['node_modules/**']
+      })
+    ]
+  };
+
+  if (env === 'production') {
+    config.plugins.push(terser({
+      output: {
+        comments: /^!/
+      }
+    }));
+  }
+
+  return config;
+};
+
 export default commandLineArgs => {
   const configs = [
-    // UMD Development
-    {
-      input: 'src/index.js',
-      output: {
-        banner,
-        name: libraryName,
-        file: 'dist/WebStorage.umd.js',
-        format: 'umd'
-      },
-      plugins: [
-        babel({
-          exclude: ['node_modules/**']
-        })
-      ]
-    },
-
-    // CommonJS (for Node) and ES module (for bundlers) build
-    {
-      input: 'src/index.js',
-      external: [], // indicate which modules should be treated as external
-      output: [
-        {
-          banner,
-          file: pkg.main,
-          format: 'cjs'
-        },
-        {
-          banner,
-          file: pkg.module,
-          format: 'es'
-        }
-      ],
-      plugins: [
-        babel({
-          exclude: ['node_modules/**']
-        })
-      ]
-    }
+    makeConfig()
   ];
 
+  // Production
   if (commandLineArgs.environment === 'BUILD:production') {
-    // UMD Production
-    configs.push({
-      input: 'src/index.js',
-      output: {
-        banner,
-        name: libraryName,
-        file: `dist/${libraryName}.umd.min.js`,
-        format: 'umd'
-      },
-      plugins: [
-        babel({
-          exclude: ['node_modules/**']
-        }),
-        terser({
-          output: {
-            comments: /^!/
-          }
-        })
-      ]
-    });
+    configs.push(makeConfig('production'));
   }
 
   return configs;
