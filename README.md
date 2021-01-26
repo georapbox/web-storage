@@ -1,8 +1,9 @@
+![build](https://github.com/georapbox/web-storage/workflows/build/badge.svg)
 [![npm version](https://img.shields.io/npm/v/@georapbox/web-storage.svg)](https://www.npmjs.com/package/@georapbox/web-storage)
-[![Build Status](https://travis-ci.com/georapbox/web-storage.svg?branch=master)](https://travis-ci.com/georapbox/web-storage)
+[![npm license](https://img.shields.io/npm/l/@georapbox/web-storage.svg)](https://www.npmjs.com/package/@georapbox/web-storage)
+[![Coverage Status](https://coveralls.io/repos/github/georapbox/web-storage/badge.svg?branch=master)](https://coveralls.io/github/georapbox/web-storage?branch=master)
 [![Dependencies](https://david-dm.org/georapbox/web-storage.svg)](https://david-dm.org/georapbox/web-storage)
 [![devDependency Status](https://david-dm.org/georapbox/web-storage/dev-status.svg)](https://david-dm.org/georapbox/web-storage?type=dev)
-[![npm license](https://img.shields.io/npm/l/@georapbox/web-storage.svg)](https://www.npmjs.com/package/@georapbox/web-storage)
 
 # WebStorage
 
@@ -16,6 +17,32 @@ The purpose of this library is to allow the user to manipulate data to `localSto
 $ npm install --save @georapbox/web-storage
 ```
 
+## Usage
+
+The library is exported in UMD, CommonJS, and ESM formats. You can import it the following ways:
+
+### Using ESM import statement
+
+```js
+import WebStorage from '@georapbox/web-storage';
+```
+
+### Using CommonJS require statement
+
+```js
+const WebStorage = require('@georapbox/web-storage');
+
+// If you use a bundler like Webpack, you may need to import it the following way 
+// as it might try to use the ESM module instead of the CommonJS.
+const WebStorage = require('@georapbox/web-storage').default; 
+```
+
+### Old school browser global
+```html
+<script src="https://unpkg.com/@georapbox/web-storage"></script>
+```
+
+## API
 ## Static methods
 
 ### WebStorage.createInstance(options = {})

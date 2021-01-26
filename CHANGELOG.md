@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## v2.1.0 (2021-01-26)
+
+- Generate minified versions for ESM and CommonJS exported bubdles.
+
+### Internal changes
+
+- Replace Mocha with Jest as testing framework.
+- Replace Travis CI with Github actions.
+
 ## v2.0.0
 
 ### BREAKING CHANGES
