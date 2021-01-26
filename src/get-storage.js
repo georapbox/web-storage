@@ -1,10 +1,10 @@
+const noop = () => {};
+
 const noopStorage = {
   getItem: noop,
   setItem: noop,
   removeItem: noop
 };
-
-function noop() {}
 
 export function hasStorage(storageType) {
   try {

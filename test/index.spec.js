@@ -174,4 +174,18 @@ describe('WebStorage', () => {
     ls.setItem('somekey', () => {});
     expect(ls.getItem('somekey')).toBeNull();
   });
+
+  it('Should mock getItem, setItem and removeItem methods if for any reason Storage is not available in global namespace', () => {
+    const tempLocalStorage = global.localStorage;
+    delete global.localStorage;
+
+    const storage = WebStorage.createInstance();
+
+    expect(storage._driver instanceof Storage).toBe(false);
+    expect(() => storage.getItem('key')).not.toThrow();
+    expect(() => storage.setItem('key', 'value')).not.toThrow();
+    expect(() => storage.removeItem('key')).not.toThrow();
+
+    global.localStorage = tempLocalStorage;
+  });
 });
