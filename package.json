@@ -1,9 +1,10 @@
 {
   "name": "@georapbox/web-storage",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "WebStorage is a JavaScript library that improves the way you work with localStorage or sessionStorage using a simple, localStorage-like API. It allows developers to store many types of data instead of just strings.",
-  "main": "dist/WebStorage.cmj.js",
-  "module": "dist/WebStorage.esm.js",
+  "main": "dist/WebStorage.cmj.min.js",
+  "module": "dist/WebStorage.esm.min.js",
+  "unpkg": "dist/WebStorage.umd.min.js",
   "files": [
     "src/",
     "dist/"
@@ -11,11 +12,12 @@
   "scripts": {
     "build": "rollup -c --environment BUILD:production",
     "dev": "rollup -c -w",
-    "lint": "eslint src --ext .js",
-    "test": "cross-env NODE_ENV=test mocha --require @babel/register --require mock-local-storage --colors ./test/*.spec.js",
-    "coverage": "nyc --reporter=text --reporter=lcov npm test",
+    "lint": "eslint src",
+    "test": "jest --config jest.config.js",
+    "test:watch": "npm run test -- --watch",
+    "test:coverage": "npm run test -- --coverage",
     "clean": "rimraf dist coverage",
-    "prepare": "npm run clean && npm run lint && npm test && npm run build"
+    "prepare": "npm-run-all clean lint test build"
   },
   "repository": {
     "type": "git",
@@ -36,32 +38,18 @@
   },
   "homepage": "https://github.com/georapbox/web-storage#readme",
   "devDependencies": {
-    "@babel/core": "~7.9.0",
-    "@babel/plugin-proposal-object-rest-spread": "~7.9.5",
-    "@babel/preset-env": "~7.9.5",
-    "@babel/register": "~7.9.0",
-    "chai": "~4.2.0",
-    "cross-env": "~7.0.2",
-    "eslint": "~6.8.0",
-    "mocha": "~7.1.1",
-    "mock-local-storage": "~1.1.11",
-    "nyc": "~15.0.1",
+    "@babel/core": "~7.12.10",
+    "@babel/plugin-proposal-object-rest-spread": "~7.12.1",
+    "@babel/preset-env": "~7.12.11",
+    "@babel/register": "~7.12.10",
+    "@rollup/plugin-babel": "~5.2.2",
+    "cross-env": "~7.0.3",
+    "eslint": "~7.18.0",
+    "jest": "~26.6.3",
+    "npm-run-all": "~4.1.5",
     "rimraf": "~3.0.2",
-    "rollup": "~2.3.4",
-    "rollup-plugin-babel": "~4.4.0",
-    "rollup-plugin-commonjs": "~10.1.0",
-    "rollup-plugin-node-resolve": "~5.2.0",
-    "rollup-plugin-terser": "~5.3.0",
-    "sinon": "~9.0.2",
-    "sinon-chai": "~3.5.0"
+    "rollup": "~2.38.0",
+    "rollup-plugin-terser": "~7.0.2"
   },
-  "browserslist": "> 0.5%, last 2 versions, Firefox ESR, not dead",
-  "nyc": {
-    "exclude": [
-      "**/*.spec.js",
-      ".babelrc.js",
-      "rollup.config.js",
-      "dist"
-    ]
-  }
+  "browserslist": "> 0.5%, last 2 versions, Firefox ESR, not dead"
 }
