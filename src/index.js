@@ -2,7 +2,6 @@ import trim from './utils/trim';
 import removePrefix from './utils/remove-prefix';
 import isString from './utils/is-string';
 import isFunction from './utils/is-function';
-import assign from './utils/assign';
 import iterateStorage from './iterate-storage';
 import getStorage, { hasStorage } from './get-storage';
 
@@ -23,7 +22,10 @@ class WebStorage {
       keyPrefix: 'web-storage/'
     };
 
-    options = assign({}, defaults, options);
+    options = {
+      ...defaults,
+      ...options
+    };
 
     if (options.driver !== 'localStorage' && options.driver !== 'sessionStorage') {
       throw new Error('The "driver" option must be one of "localStorage" or "sessionStorage".');
