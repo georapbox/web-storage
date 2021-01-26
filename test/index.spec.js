@@ -1,14 +1,4 @@
-import chai from 'chai';
-// import sinon from 'sinon';
-import sinonChai from 'sinon-chai';
 import WebStorage from '../src';
-
-const { expect } = chai;
-
-chai.use(sinonChai);
-
-global.window = {};
-window.localStorage = global.localStorage;
 
 const ls = WebStorage.createInstance();
 
@@ -19,40 +9,40 @@ describe('WebStorage', () => {
   });
 
   it('Should create a new instance', () => {
-    expect(ls.constructor.name).to.equal('WebStorage');
+    expect(ls.constructor.name).toBe('WebStorage');
   });
 
   it('Should create a new instance with a new namespace', () => {
     expect(new WebStorage({
       keyPrefix: 'MyApp/'
-    })._keyPrefix).to.equal('MyApp/');
+    })._keyPrefix).toBe('MyApp/');
   });
 
   it('Should create a new instance with default options if not provided by user', () => {
-    expect(new WebStorage()._storageType).to.equal('localStorage');
-    expect(new WebStorage()._keyPrefix).to.equal('web-storage/');
+    expect(new WebStorage()._storageType).toBe('localStorage');
+    expect(new WebStorage()._keyPrefix).toBe('web-storage/');
   });
 
   it('Should throw Error if driver option is not "localStorage" or "sessionStorage"', () => {
     expect(() => new WebStorage({
       driver: 'fakeStorage'
-    })).to.throw(Error);
+    })).toThrow(new Error('The "driver" option must be one of "localStorage" or "sessionStorage".'));
   });
 
   it('Should throw TypeError if keyPrefix option is not a string', () => {
     expect(() => new WebStorage({
       keyPrefix: null
-    })).to.throw(TypeError);
+    })).toThrow(new TypeError('The "keyPrefix" option must be a string.'));
   });
 
   it('Should trim (left and right) the "keyPrefix"', () => {
-    expect(new WebStorage({ keyPrefix: ' my-app ' })._keyPrefix).to.equal('my-app');
-    expect(new WebStorage({ keyPrefix: ' my-app' })._keyPrefix).to.equal('my-app');
-    expect(new WebStorage({ keyPrefix: 'my-app ' })._keyPrefix).to.equal('my-app');
+    expect(new WebStorage({ keyPrefix: ' my-app ' })._keyPrefix).toBe('my-app');
+    expect(new WebStorage({ keyPrefix: ' my-app' })._keyPrefix).toBe('my-app');
+    expect(new WebStorage({ keyPrefix: 'my-app ' })._keyPrefix).toBe('my-app');
   });
 
   it('Should succesfully save and retrieve values to localStorage', () => {
-    ls.setItem('p1', {foo: 'bar'});
+    ls.setItem('p1', { foo: 'bar' });
     ls.setItem('p2', [1, 2, 3]);
     ls.setItem('p3', null);
     ls.setItem('p4', void 0);
@@ -62,25 +52,25 @@ describe('WebStorage', () => {
     ls.setItem('p8', -Infinity);
     ls.setItem('p9', -0);
 
-    expect(ls.getItem('p1')).to.eql({ foo: 'bar' });
-    expect(ls.getItem('p2')).to.eql([1, 2, 3]);
-    expect(ls.getItem('p3')).to.equal(null);
-    expect(ls.getItem('p4')).to.equal(null);
-    expect(ls.getItem('p5')).to.equal(10);
-    expect(ls.getItem('p6')).to.equal(null);
-    expect(ls.getItem('p7')).to.equal(null);
-    expect(ls.getItem('p8')).to.equal(null);
-    expect(ls.getItem('p9')).to.equal(0);
+    expect(ls.getItem('p1')).toEqual({ foo: 'bar' });
+    expect(ls.getItem('p2')).toEqual([1, 2, 3]);
+    expect(ls.getItem('p3')).toBeNull();
+    expect(ls.getItem('p4')).toBeNull();
+    expect(ls.getItem('p5')).toBe(10);
+    expect(ls.getItem('p6')).toBeNull();
+    expect(ls.getItem('p7')).toBeNull();
+    expect(ls.getItem('p8')).toBeNull();
+    expect(ls.getItem('p9')).toBe(0);
   });
 
   it('Should remove a saved item by its key', () => {
     ls.setItem('foo', { foo: 'bar' });
 
-    expect(ls.getItem('foo')).to.eql({ foo: 'bar' });
+    expect(ls.getItem('foo')).toEqual({ foo: 'bar' });
 
     ls.removeItem('foo');
 
-    expect(ls.getItem('foo')).to.equal(null);
+    expect(ls.getItem('foo')).toBeNull();
   });
 
   it('Should clear all keys from a specific database, but leave any other saved data (not in database) intact', () => {
@@ -90,12 +80,12 @@ describe('WebStorage', () => {
 
     localStorage.setItem('p4', 'Not in database');
 
-    expect(ls.length()).to.equal(3);
+    expect(ls.length()).toBe(3);
 
     ls.clear();
 
-    expect(ls.length()).to.equal(0);
-    expect(localStorage).to.have.lengthOf(1);
+    expect(ls.length()).toBe(0);
+    expect(localStorage).toHaveLength(1);
   });
 
   it('Should iterate over all value/key pairs in datastore', () => {
@@ -111,22 +101,19 @@ describe('WebStorage', () => {
       keys.push(key);
     });
 
-    expect(values).to.have.lengthOf(3);
-    expect(values[0]).to.equal('Item 1');
-    expect(values[1]).to.equal('Item 2');
-    expect(values[2]).to.equal('Item 3');
+    expect(values).toHaveLength(3);
+    expect(values[0]).toBe('Item 1');
+    expect(values[1]).toBe('Item 2');
+    expect(values[2]).toBe('Item 3');
 
-    expect(keys).to.have.lengthOf(3);
-    expect(keys[0]).to.equal('p1');
-    expect(keys[1]).to.equal('p2');
-    expect(keys[2]).to.equal('p3');
+    expect(keys).toHaveLength(3);
+    expect(keys[0]).toBe('p1');
+    expect(keys[1]).toBe('p2');
+    expect(keys[2]).toBe('p3');
   });
 
   it('Should throw TypeError if "iteratorCallback is not a function"', () => {
-    expect(() => ls.iterate()).to.throw(TypeError);
-    expect(() => ls.iterate({})).to.throw(TypeError);
-    expect(() => ls.iterate([])).to.throw(TypeError);
-    expect(() => ls.iterate(null)).to.throw(TypeError);
+    expect(() => ls.iterate()).toThrow(new TypeError('Failed to iterate on \'Storage\': \'iteratorCallback\' must be a function.'));
   });
 
   it('Should return the keys of a datastore as an array of strings', () => {
@@ -136,12 +123,12 @@ describe('WebStorage', () => {
 
     const keys = ls.keys();
 
-    expect(Array.isArray(keys)).to.equal(true);
-    expect(keys).to.have.lengthOf(3);
-    expect(keys.indexOf('p1')).to.not.equal(-1);
-    expect(keys.indexOf('p2')).to.not.equal(-1);
-    expect(keys.indexOf('p3')).to.not.equal(-1);
-    expect(keys.indexOf('p4')).to.equal(-1);
+    expect(Array.isArray(keys)).toBe(true);
+    expect(keys).toHaveLength(3);
+    expect(keys.indexOf('p1')).not.toBe(-1);
+    expect(keys.indexOf('p2')).not.toBe(-1);
+    expect(keys.indexOf('p3')).not.toBe(-1);
+    expect(keys.indexOf('p4')).toBe(-1);
   });
 
   it('Should return the length of saved items for a specific database', () => {
@@ -160,31 +147,31 @@ describe('WebStorage', () => {
     ls2.setItem('p1', 'Item 1');
     ls2.setItem('p2', 'Item 2');
 
-    expect(ls1.length()).to.equal(3);
+    expect(ls1.length()).toBe(3);
 
-    expect(ls2.length()).to.equal(2);
+    expect(ls2.length()).toBe(2);
   });
 
   it('Should check if localStorage is available', () => {
-    expect(WebStorage.isAvailable('fakeStorage')).to.equal(false);
+    expect(WebStorage.isAvailable('fakeStorage')).toBe(false);
 
-    expect(WebStorage.isAvailable('localStorage')).to.equal(true);
+    expect(WebStorage.isAvailable('localStorage')).toBe(true);
   });
 
   it('getItem should throw TypeError if first argument is not a string', () => {
-    expect(() => ls.getItem()).to.throw(TypeError);
+    expect(() => ls.getItem()).toThrow(TypeError('Failed to execute \'getItem\' on \'Storage\': The first argument must be a string.'));
   });
 
   it('setItem should throw TypeError if first argument is not a string', () => {
-    expect(() => ls.setItem()).to.throw(TypeError);
+    expect(() => ls.setItem()).toThrow(TypeError('Failed to execute \'setItem\' on \'Storage\': The first argument must be a string.'));
   });
 
   it('removeItem should throw TypeError if first argument is not a string', () => {
-    expect(() => ls.removeItem()).to.throw(TypeError);
+    expect(() => ls.removeItem()).toThrow(new TypeError('Failed to execute \'removeItem\' on \'Storage\': The first argument must be a string.'));
   });
 
   it('setItem should save null if second argument is a function', () => {
     ls.setItem('somekey', () => {});
-    expect(ls.getItem('somekey')).to.equal(null);
+    expect(ls.getItem('somekey')).toBeNull();
   });
 });
