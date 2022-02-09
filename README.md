@@ -1,9 +1,7 @@
 ![build](https://github.com/georapbox/web-storage/workflows/build/badge.svg)
 [![npm version](https://img.shields.io/npm/v/@georapbox/web-storage.svg)](https://www.npmjs.com/package/@georapbox/web-storage)
-[![npm license](https://img.shields.io/npm/l/@georapbox/web-storage.svg)](https://www.npmjs.com/package/@georapbox/web-storage)
 [![Coverage Status](https://coveralls.io/repos/github/georapbox/web-storage/badge.svg?branch=master)](https://coveralls.io/github/georapbox/web-storage?branch=master)
-[![Dependencies](https://david-dm.org/georapbox/web-storage.svg)](https://david-dm.org/georapbox/web-storage)
-[![devDependency Status](https://david-dm.org/georapbox/web-storage/dev-status.svg)](https://david-dm.org/georapbox/web-storage?type=dev)
+[![npm license](https://img.shields.io/npm/l/@georapbox/web-storage.svg)](https://www.npmjs.com/package/@georapbox/web-storage)
 
 # WebStorage
 
