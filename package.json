@@ -1,27 +1,28 @@
 {
   "name": "@georapbox/web-storage",
-  "version": "2.1.0",
-  "description": "WebStorage is a JavaScript library that improves the way you work with localStorage or sessionStorage using a simple, localStorage-like API. It allows developers to store many types of data instead of just strings.",
-  "main": "dist/WebStorage.cmj.min.js",
-  "module": "dist/WebStorage.esm.min.js",
-  "unpkg": "dist/WebStorage.umd.min.js",
+  "version": "3.0.0",
+  "description": "WebStorage is a lightweight wrapper for namespaced localStorage/sessionStorage with support for serializable values and safe, tuple-based error handling.",
+  "main": "dist/web-storage.js",
+  "unpkg": "dist/web-storage.js",
+  "type": "module",
+  "types": "dist/web-storage.d.ts",
   "files": [
     "src/",
     "dist/"
   ],
   "scripts": {
-    "build": "rollup -c --environment BUILD:production",
-    "dev": "rollup -c -w",
-    "lint": "eslint src",
-    "test": "jest --config jest.config.js",
+    "lint": "eslint",
+    "format": "prettier --ignore-unknown --write .",
+    "test": "web-test-runner",
     "test:watch": "npm run test -- --watch",
     "test:coverage": "npm run test -- --coverage",
-    "clean": "rimraf dist coverage",
-    "prepare": "npm-run-all clean lint test build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/georapbox/web-storage.git"
+    "types": "tsc --project tsconfig.json",
+    "dev:esbuild": "node ./scripts/dev.mjs",
+    "dev": "npm-run-all clean dev:esbuild",
+    "build:esbuild": "node ./scripts/build.mjs",
+    "build": "npm-run-all clean build:esbuild",
+    "clean": "rimraf dist",
+    "prepare": "npm-run-all clean lint test build types"
   },
   "keywords": [
     "localStorage",
@@ -31,25 +32,35 @@
     "Web Storage",
     "DOM Storage"
   ],
-  "author": "George Raptis <georapbox@gmail.com>",
-  "license": "MIT",
+  "author": {
+    "name": "George Raptis",
+    "email": "georapbox@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/georapbox/web-storage.git"
+  },
   "bugs": {
     "url": "https://github.com/georapbox/web-storage/issues"
   },
   "homepage": "https://github.com/georapbox/web-storage#readme",
+  "license": "MIT",
   "devDependencies": {
-    "@babel/core": "~7.12.10",
-    "@babel/plugin-proposal-object-rest-spread": "~7.12.1",
-    "@babel/preset-env": "~7.12.11",
-    "@babel/register": "~7.12.10",
-    "@rollup/plugin-babel": "~5.2.2",
-    "cross-env": "~7.0.3",
-    "eslint": "~7.18.0",
-    "jest": "~26.6.3",
+    "@eslint/js": "~9.27.0",
+    "@esm-bundle/chai": "~4.3.4-fix.0",
+    "@open-wc/testing": "~4.0.0",
+    "@web/test-runner": "~0.20.2",
+    "@web/test-runner-playwright": "~0.11.0",
+    "esbuild": "~0.25.4",
+    "eslint": "~9.27.0",
+    "globals": "~16.2.0",
     "npm-run-all": "~4.1.5",
-    "rimraf": "~3.0.2",
-    "rollup": "~2.38.0",
-    "rollup-plugin-terser": "~7.0.2"
+    "prettier": "~3.5.3",
+    "rimraf": "~6.0.1",
+    "sinon": "~20.0.0",
+    "typescript": "~5.8.3"
   },
-  "browserslist": "> 0.5%, last 2 versions, Firefox ESR, not dead"
+  "publishConfig": {
+    "access": "public"
+  }
 }

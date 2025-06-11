@@ -1,5 +1,46 @@
 # CHANGELOG
 
+## v3.0.0 (2025-06-XX)
+
+### BREAKING CHANGES
+
+- The `WebStorage` module is no longer exported as the default export. You must now explicitly import it as a named export:  
+**v2.x.x**
+```js
+import WebStorage from '@georapbox/web-storage';
+```
+
+**v3.x.x**
+```js
+import { WebStorage } from '@georapbox/web-storage';
+```
+- All API methods now return `[value, error]` tuple-like values instead of accepting error callbacks.
+  This allows developers to handle errors in a clean, synchronous style without using `try/catch` or providing callbacks. For example:  
+  **v2.x.x**
+  ```js
+  const value = storage.getItem('key', value, (err) => {
+    console.error(err);
+  });
+  ```
+  
+  **v3.x.x**
+  ```js
+  const [value, error] = storage.getItem('key', value);
+  
+  if (error) {
+    console.error(error);
+  }
+  ```
+- Removed support for error callback functions in all methods (`getItem`, `setItem`, `removeItem`, `clear`, `keys`, `length`, `iterate`). Errors must now be handled via the returned tuple.
+- Internal `_keyPrefix` and `_driver` fields are now private class fields (`#keyPrefix`, `#driver`). They are no longer accessible outside the class.
+
+### INTERNAL CHANGES
+
+- Rewrite to use native class private fields.
+- Internal noopStorage fallback now fully conforms to the Storage interface.
+- Drop Jest in favor of @web/test-runner and Playwright for testing.
+- Drop rollup in favor of esbuild for bundling.
+
 ## v2.1.0 (2021-01-26)
 
 - Generate minified versions for ESM and CommonJS exported bubdles.
