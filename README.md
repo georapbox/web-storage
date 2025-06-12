@@ -29,11 +29,11 @@ import { WebStorage } from '@georapbox/web-storage';
 
 ## API
 
-## Static methods
+## Constructor
 
-### WebStorage.createInstance(options = {})
+### new WebStorage(options = {})
 
-Creates a new instance of the WebStorage. The following options can be set:
+Creates a new instance of the WebStorage with the specified options. The following options can be set:
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
@@ -41,6 +41,21 @@ Creates a new instance of the WebStorage. The following options can be set:
 | **keyPrefix<sup>1</sup>** | `String` | "web-storage/" | The prefix for all keys stored in the offline storage. The value provided is trimmed (both left and right) internally to avoid potential user mistakes. |
 
 **<sup>1</sup>** *`keyPrefix` needs to be declared only when creating an instance of `WebStorage`. Afterwards, when using any of the API methods that accept `key` as argument, we just use the key to refer to the item we want to manipulate.*
+
+**Example**
+
+```js
+const myStore = new WebStorage({
+  driver: 'sessionStorage',
+  keyPrefix: 'my-storage/'
+});
+```
+
+## Static methods
+
+### WebStorage.createInstance(options = {})
+
+Same as the constructor, but returns a new instance of `WebStorage`. This is a convenience method to create an instance without using the `new` keyword.
 
 **Example**
 
@@ -56,8 +71,7 @@ const myStore = WebStorage.createInstance({
 Check if `storageType` is supported and is available.
 Storage might be unavailable due to no browser support or due to being full or due to browser privacy settings.
 
-**Kind**: static method of `WebStorage`  
-**Returns**: `Boolean` - Returns `true` if Storage available; otherwise `false`
+**Returns**: `boolean` - Returns `true` if Storage available; otherwise `false`.
 
 | Param | Type | Description |
 | ----- | ---- | ----------- |
@@ -73,10 +87,9 @@ WebStorage.isAvailable('localStorage');
 
 ### getItem(key)
 
-Gets a saved item from storage by its key.
+Gets the saved item for the specified key from the storage for a specific datastore.
 
-**Kind**: instance method of `WebStorage`  
-**Throws:** `TypeError` if `key` is not a string  
+**Throws:** `TypeError` - Throws if `key` is not a string.  
 **Returns:** `[any, Error | null]` - Returns an array with two elements: the first is the value of the saved item, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
 
 | Param | Type | Default | Description |
@@ -91,15 +104,14 @@ const [value, error] = myStore.getItem('somekey');
 
 ### setItem(key, value)
 
-Saves an item to storage. You can store items of any of the following data types as long as data can be serialized to JSON.
+Saves an item to storage with the specified key. You can store items of any of the following data types as long as data can be serialized to JSON.
 
 - String
 - Number
 - Array
 - Object
 
-**Kind**: instance method of `WebStorage`  
-**Throws:** `TypeError` if `key` is not a string  
+**Throws:** `TypeError` - Throws if `key` is not a string.  
 **Returns:** `[boolean, Error | null]` - Returns an array with two elements: the first is `true` if the item was saved successfully, or `false` if it was not, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
 
 | Param | Type | Default | Description |
@@ -115,10 +127,9 @@ const [saved, error] = myStore.setItem('somekey', { foo: 'bar' });
 
 ### removeItem(key)
 
-Removes the item for the specific key from the storage.
+Removes the saved item for the specified key from storage.
 
-**Kind**: instance method of `WebStorage`  
-**Throws:** `TypeError` if `key` is not a string  
+**Throws:** `TypeError` - Throws if `key` is not a string.  
 **Returns:** `[boolean, Error | null]` - Returns an array with two elements: the first is `true` if the item was removed successfully, or `false` if it was not, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
 
 | Param | Type | Default | Description |
@@ -133,9 +144,8 @@ const [removed, error] = myStore.removeItem('somekey');
 
 ### clear()
 
-Removes all saved items from storage.
+Removes all saved items from storage for a specific datastore.
 
-**Kind**: instance method of `WebStorage`  
 **Returns:** `[boolean, Error | null]` - Returns an array with two elements: the first is `true` if all items were removed successfully, or `false` if they were not, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
 
 **Usage**
@@ -146,9 +156,8 @@ const [cleared, error] = myStore.clear();
 
 ### keys()
 
-Gets the list of all keys in the storage for a specific datastore.
+Gets all keys (unprefixed) of saved items in a specific datastore.
 
-**Kind**: instance method of `WebStorage`  
 **Returns:** `[string[], Error | null]` - Returns an array with two elements: the first is an array of keys (without the prefix) for the saved items, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
 
 **Usage**
@@ -159,9 +168,8 @@ const [keys, error] = myStore.keys();
 
 ### length()
 
-Gets the number of items saved in a specific datastore.
+Gets the number of saved items in a specific datastore.
 
-**Kind**: instance method of `WebStorage`  
 **Returns:** `[number, Error | null]` - Returns an array with two elements: the first is the number of items saved in the datastore, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
 
 **Usage**
@@ -172,10 +180,9 @@ const [len, error] = myStore.length();
 
 ### iterate(iteratorCallback)
 
-Iterate over all value/key pairs in datastore.
+Iterates over all saved items in storage for a specific datastore and execute a callback function for each key-value pair.
 
-**Kind**: instance method of `WebStorage`  
-**Throws:** `TypeError` if `iteratorCallback` is not a function  
+**Throws:** `TypeError` - Throws if `callback` is not a function.  
 **Returns:** `[boolean, Error | null]` - Returns an array with two elements: the first is `true` if the iteration was successful, or `false` if it was not, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
 
 | Param | Type | Default | Description |

@@ -4,7 +4,7 @@
 
 ### BREAKING CHANGES
 
-- The `WebStorage` module is no longer exported as the default export. You must now explicitly import it as a named export:  
+- The `WebStorage` module is now exclusively available as an ES module (ESM), aligning with the modern JavaScript module standard. Additionally, it is no longer the default export — you must import it using a named import.  
 **v2.x.x**
 ```js
 import WebStorage from '@georapbox/web-storage';
@@ -62,16 +62,12 @@ import { WebStorage } from '@georapbox/web-storage';
 
   **v1.x.x**  
   ```js
-  WebStorage.createInstance({
-    driver: window.localStorage
-  })
+  new WebStorage({ driver: window.localStorage })
   ```
 
   **v2.x.x**  
   ```js
-  WebStorage.createInstance({
-    driver: 'localStorage'
-  })
+  new WebStorage({ driver: 'localStorage' })
   ```
 - `WebStorage.isAvailable` static method, as of v2.x, accepts "localStorage" or "sessionStorage" strings as arguments.
 - On initialization the library **throws** if `driver` option is anything other than "localStorage" or "sessionStorage" and if `keyPrefix` option is not of type `String`.
