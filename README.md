@@ -37,10 +37,8 @@ Creates a new instance of the WebStorage with the specified options. The followi
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
-| **driver** | `String` | "localStorage" | The preferred driver to use. Use one between "localStorage" or "sessionStorage". |
-| **keyPrefix<sup>1</sup>** | `String` | "web-storage/" | The prefix for all keys stored in the offline storage. The value provided is trimmed (both left and right) internally to avoid potential user mistakes. |
-
-**<sup>1</sup>** *`keyPrefix` needs to be declared only when creating an instance of `WebStorage`. Afterwards, when using any of the API methods that accept `key` as argument, we just use the key to refer to the item we want to manipulate.*
+| **driver** | `String` | "localStorage" | Specifies the storage driver to use. Accepts either "localStorage" or "sessionStorage". This determines where data will be persisted. |
+| **keyPrefix** | `String` | "web-storage/" | A prefix applied to all keys stored in offline storage. It is automatically trimmed on both sides to prevent user errors. You only need to set `keyPrefix` when creating a `WebStorage` instance. After that, API methods should be used with plain keys—`keyPrefix` is applied internally. |
 
 **Example**
 
@@ -68,7 +66,7 @@ const myStore = WebStorage.createInstance({
 
 ### WebStorage.isAvailable(storageType)
 
-Check if `storageType` is supported and is available.
+Checks if `storageType` is supported and is available.
 Storage might be unavailable due to no browser support or due to being full or due to browser privacy settings.
 
 **Returns**: `boolean` - Returns `true` if Storage available; otherwise `false`.
@@ -94,7 +92,7 @@ Gets the saved item for the specified key from the storage for a specific datast
 
 | Param | Type | Default | Description |
 | ----- | ---- | ------- | ----------- |
-| key | `string` | - |The property name of the saved item |
+| key | `string` | - | The key of the item to retrieve. |
 
 **Usage**
 
@@ -116,7 +114,7 @@ Saves an item to storage with the specified key. You can store items of any of t
 
 | Param | Type | Default | Description |
 | ----- | ---- | ------- | ----------- |
-| key | `string` | - | The property name of the item to save |
+| key | `string` | - | The key under which to store the item. |
 | value | `any` | - | The item to save to the selected storage. |
 
 **Usage**
@@ -134,7 +132,7 @@ Removes the saved item for the specified key from storage.
 
 | Param | Type | Default | Description |
 | ----- | ---- | ------- | ----------- |
-| key | `string` |  | The property name of the item to remove |
+| key | `string` | - | The key of the item to remove. |
 
 **Usage**
 

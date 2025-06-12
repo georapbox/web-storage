@@ -100,7 +100,7 @@ class WebStorage {
   /**
    * Gets the saved item for the specified key from the storage for a specific datastore.
    *
-   * @param {string} key - The property name of the saved item.
+   * @param {string} key - The key of the item to retrieve.
    * @throws {TypeError} - Throws if `key` is not a string.
    * @returns {Result<unknown>} - Returns an array with two elements: the first is the value of the saved item, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
    */
@@ -120,7 +120,7 @@ class WebStorage {
   /**
    * Saves an item to storage with the specified key.
    *
-   * @param {string} key - The property name of the item to save.
+   * @param {string} key - The key under which to store the item.
    * @param {any} value - The item to save to the selected storage.
    * @throws {TypeError} - Throws if `key` is not a string.
    * @returns {Result<boolean>} - Returns an array with two elements: the first is `true` if the item was saved successfully, or `false` if it was not, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
@@ -143,7 +143,7 @@ class WebStorage {
   /**
    * Removes the saved item for the specified key from storage.
    *
-   * @param {string} key - The property name of the item to remove.
+   * @param {string} key - The key of the item to remove.
    * @throws {TypeError} - Throws if `key` is not a string.
    * @returns {Result<boolean>} - Returns an array with two elements: the first is `true` if the item was removed successfully, or `false` if it was not, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
    */
