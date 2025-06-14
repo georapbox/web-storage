@@ -5,17 +5,18 @@
 ### BREAKING CHANGES
 
 - The `WebStorage` module is now exclusively available as an ES module (ESM), aligning with the modern JavaScript module standard. Additionally, it is no longer the default export — you must import it using a named import.  
-**v2.x.x**
-```js
-import WebStorage from '@georapbox/web-storage';
-```
-
-**v3.x.x**
-```js
-import { WebStorage } from '@georapbox/web-storage';
-```
+  **v2.x.x**
+  ```js
+  import WebStorage from '@georapbox/web-storage';
+  ```
+  
+  **v3.x.x**
+  ```js
+  import { WebStorage } from '@georapbox/web-storage';
+  ```
 - All API methods now return `[value, error]` tuple-like values instead of accepting error callbacks.
-  This allows developers to handle errors in a clean, synchronous style without using `try/catch` or providing callbacks. For example:  
+  This allows developers to handle errors in a clean, synchronous style without using `try/catch` or providing callbacks. For example:
+  
   **v2.x.x**
   ```js
   const value = storage.getItem('key', value, (err) => {

@@ -98,26 +98,6 @@ class WebStorage {
   }
 
   /**
-   * Gets the saved item for the specified key from the storage for a specific datastore.
-   *
-   * @param {string} key - The key of the item to retrieve.
-   * @throws {TypeError} - Throws if `key` is not a string.
-   * @returns {Result<unknown>} - Returns an array with two elements: the first is the value of the saved item, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
-   */
-  getItem(key) {
-    if (typeof key !== 'string') {
-      throw new TypeError("Failed to execute 'getItem' on 'Storage': The first argument must be a string.");
-    }
-
-    try {
-      const raw = this.#driver.getItem(this.#keyPrefix + key);
-      return raw === null ? [null, null] : [JSON.parse(raw), null];
-    } catch (error) {
-      return [null, error instanceof Error ? error : new Error(String(error))];
-    }
-  }
-
-  /**
    * Saves an item to storage with the specified key.
    *
    * @param {string} key - The key under which to store the item.
@@ -137,6 +117,26 @@ class WebStorage {
       return [true, null];
     } catch (error) {
       return [false, error instanceof Error ? error : new Error(String(error))];
+    }
+  }
+
+  /**
+   * Gets the saved item for the specified key from the storage for a specific datastore.
+   *
+   * @param {string} key - The key of the item to retrieve.
+   * @throws {TypeError} - Throws if `key` is not a string.
+   * @returns {Result<unknown>} - Returns an array with two elements: the first is the value of the saved item, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
+   */
+  getItem(key) {
+    if (typeof key !== 'string') {
+      throw new TypeError("Failed to execute 'getItem' on 'Storage': The first argument must be a string.");
+    }
+
+    try {
+      const raw = this.#driver.getItem(this.#keyPrefix + key);
+      return raw === null ? [null, null] : [JSON.parse(raw), null];
+    } catch (error) {
+      return [null, error instanceof Error ? error : new Error(String(error))];
     }
   }
 

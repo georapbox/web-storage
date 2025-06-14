@@ -83,23 +83,6 @@ WebStorage.isAvailable('localStorage');
 
 ## Instance methods
 
-### getItem(key)
-
-Gets the saved item for the specified key from the storage for a specific datastore.
-
-**Throws:** `TypeError` - Throws if `key` is not a string.  
-**Returns:** `[any, Error | null]` - Returns an array with two elements: the first is the value of the saved item, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
-
-| Param | Type | Default | Description |
-| ----- | ---- | ------- | ----------- |
-| key | `string` | - | The key of the item to retrieve. |
-
-**Usage**
-
-```js
-const [value, error] = myStore.getItem('somekey');
-```
-
 ### setItem(key, value)
 
 Saves an item to storage with the specified key. You can store items of any of the following data types as long as data can be serialized to JSON.
@@ -121,6 +104,45 @@ Saves an item to storage with the specified key. You can store items of any of t
 
 ```js
 const [saved, error] = myStore.setItem('somekey', { foo: 'bar' });
+```
+
+#### Note on value serialization
+
+WebStorage uses `JSON.stringify()` internally to serialize values before saving them. While this supports most common JavaScript types, some special values are silently converted:
+
+- `NaN`, `Infinity`, `-Infinity`, and `undefined` → become null
+- Functions and symbols → are omitted or stored as `null/undefined`
+- Circular references → will throw a `TypeError`
+
+For example:
+
+```js
+storage.setItem('foo', NaN);
+// Will be stored as: "null"
+
+storage.getItem('foo');
+// => [null, null]
+```
+
+**Why this matters:**
+
+If you store special or non-JSON-safe values, they may not round-trip exactly as expected. This is a deliberate design decision to keep the API simple and compatible with `Storage` constraints. If needed, consider manually encoding such values before storing them.
+
+### getItem(key)
+
+Gets the saved item for the specified key from the storage for a specific datastore.
+
+**Throws:** `TypeError` - Throws if `key` is not a string.  
+**Returns:** `[any, Error | null]` - Returns an array with two elements: the first is the value of the saved item, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
+
+| Param | Type | Default | Description |
+| ----- | ---- | ------- | ----------- |
+| key | `string` | - | The key of the item to retrieve. |
+
+**Usage**
+
+```js
+const [value, error] = myStore.getItem('somekey');
 ```
 
 ### removeItem(key)

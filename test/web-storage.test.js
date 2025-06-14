@@ -75,6 +75,7 @@ describe('WebStorage', () => {
     store.setItem('p7', Infinity);
     store.setItem('p8', -Infinity);
     store.setItem('p9', -0);
+    store.setItem('p10', [{ foo: 'bar' }, 'foo', [1, 2, 3]]);
 
     expect(store.getItem('p1')).to.deep.equal([{ foo: 'bar' }, null]);
     expect(store.getItem('p2')).to.deep.equal([[1, 2, 3], null]);
@@ -85,6 +86,7 @@ describe('WebStorage', () => {
     expect(store.getItem('p7')).to.deep.equal([null, null]);
     expect(store.getItem('p8')).to.deep.equal([null, null]);
     expect(store.getItem('p9')).to.deep.equal([0, null]);
+    expect(store.getItem('p10')).to.deep.equal([[{ foo: 'bar' }, 'foo', [1, 2, 3]], null]);
   });
 
   it('Should remove a saved item by its key', () => {
