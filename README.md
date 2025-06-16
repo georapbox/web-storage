@@ -98,7 +98,7 @@ Saves an item to storage with the specified key. You can store items of any of t
 | Param | Type | Default | Description |
 | ----- | ---- | ------- | ----------- |
 | key | `string` | - | The key under which to store the item. |
-| value | `any` | - | The item to save to the selected storage. |
+| value | `unknown` | - | The item to save to the selected storage. |
 
 **Usage**
 
@@ -133,7 +133,7 @@ If you store special or non-JSON-safe values, they may not round-trip exactly as
 Gets the saved item for the specified key from the storage for a specific datastore.
 
 **Throws:** `TypeError` - Throws if `key` is not a string.  
-**Returns:** `[any, Error | null]` - Returns an array with two elements: the first is the value of the saved item, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
+**Returns:** `[unknown, Error | null]` - Returns an array with two elements: the first is the value of the saved item, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
 
 | Param | Type | Default | Description |
 | ----- | ---- | ------- | ----------- |
@@ -210,7 +210,7 @@ Iterates over all saved items in storage for a specific datastore and execute a 
 
 | Param | Type | Default | Description |
 | ----- | ---- | ------- | ----------- |
-| iteratorCallback | `(value: any, key: string) => void` | - | A callabck function to be executed for each iteration |
+| iteratorCallback | `(value: unknown, key: string) => void` | - | A callabck function to be executed for each iteration |
 
 **Usage**
 
