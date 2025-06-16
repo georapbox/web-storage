@@ -7,11 +7,11 @@
 
 # WebStorage
 
-WebStorage is a lightweight JavaScript library that improves how you work with `localStorage` or `sessionStorage` by providing a clean, consistent API. It supports storing and retrieving any serializable value (not just strings) by automatically handling JSON encoding and decoding internally.
+`WebStorage` is a lightweight JavaScript library that improves how you work with `localStorage` or `sessionStorage` by providing a clean, consistent API. It supports storing and retrieving any serializable value (not just strings) by automatically handling JSON encoding and decoding internally.
 
-A key feature of WebStorage is its use of namespacing via a configurable key prefix (default: `'web-storage/'`). This ensures that all stored items are scoped to your application, preventing collisions with other data in storage. For example, using a prefix like `'my-app/'` means calling clear() will only remove items with that prefix—leaving unrelated data untouched.
+A key feature of `WebStorage` is its use of namespacing via a configurable key prefix (default: `'web-storage/'`). This ensures that all stored items are scoped to your application, preventing collisions with other data in storage. For example, using a prefix like `'my-app/'` means calling clear() will only remove items with that prefix—leaving unrelated data untouched.
 
-WebStorage is also designed with error handling in mind. Instead of throwing exceptions, all methods return a `[result, error]` tuple-style value allowing you to handle errors gracefully—or ignore them entirely—without needing `try...catch`.
+`WebStorage` is also designed with error handling in mind. Instead of throwing exceptions, all methods return a `[result, error]` tuple-style value allowing you to handle errors gracefully—or ignore them entirely—without needing `try...catch`.
 
 ## Install
 
@@ -33,7 +33,7 @@ import { WebStorage } from '@georapbox/web-storage';
 
 ### new WebStorage(options = {})
 
-Creates a new instance of the WebStorage with the specified options. The following options can be set:
+Creates a new instance of the `WebStorage` with the specified options. The following options can be set:
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
@@ -53,7 +53,7 @@ const myStore = new WebStorage({
 
 ### WebStorage.createInstance(options = {})
 
-Same as the constructor, but returns a new instance of `WebStorage`. This is a convenience method to create an instance without using the `new` keyword.
+Creates and returns a new `WebStorage` instance, just like the constructor. This convenience method allows you to instantiate without using the `new` keyword.
 
 **Example**
 
@@ -108,7 +108,7 @@ const [saved, error] = myStore.setItem('somekey', { foo: 'bar' });
 
 #### Note on value serialization
 
-WebStorage uses `JSON.stringify()` internally to serialize values before saving them. While this supports most common JavaScript types, some special values are silently converted:
+`WebStorage` uses `JSON.stringify()` internally to serialize values before saving them. While this supports most common JavaScript types, some special values are silently converted:
 
 - `NaN`, `Infinity`, `-Infinity`, and `undefined` → become null
 - Functions and symbols → are omitted or stored as `null/undefined`
@@ -202,6 +202,9 @@ const [len, error] = myStore.length();
 
 Iterates over all saved items in storage for a specific datastore and execute a callback function for each key-value pair.
 
+> [!IMPORTANT]
+> `iterate` does not guarantee the order of iteration. The order may vary depending on the browser implementation and storage driver used.
+
 **Throws:** `TypeError` - Throws if `callback` is not a function.  
 **Returns:** `[boolean, Error | null]` - Returns an array with two elements: the first is `true` if the iteration was successful, or `false` if it was not, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
 
@@ -219,32 +222,61 @@ const [iterated, error] = myStore.iterate((value, key) => {
 
 ## Development
 
+Below are the instructions for setting up the development environment.
+
+### Prerequisites
+
+- Node.js (v22.x.x)
+- npm (v10.x.x)
+
+### Installation
+
+Clone the repository and install the dependencies:
+
+```sh
+$ git clone git@github.com:georapbox/web-storage.git
+$ cd web-storage
+$ npm install
+```
+
 ### Build for development
+
+Build the library for development and watch for any changes to the source files:
 
 ```sh
 $ npm run dev
 ```
 
-Builds the library for development and watches for any changes.
-
 ### Build for production
+
+Build the library for production. This will create a minified version of the library in the `dist` directory.
 
 ```sh
 $ npm run build
 ```
 
-Builds the library for production; the output is minified and optimized for production use in the `dist` folder.
-
 ### Test
+
+Run the tests to ensure everything is working correctly:
 
 ```sh
 $ npm test
 ```
 
-Runs the library tests. For coverage report, run:
+### Test with coverage
+
+Generate a test coverage report. This will run the tests and generate a coverage report in the `coverage` directory.
 
 ```sh
 $ npm run test:coverage
+```
+
+### Linting
+
+Run the linter to check for any code style issues:
+
+```sh
+$ npm run lint
 ```
 
 ## Changelog

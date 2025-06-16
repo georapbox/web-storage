@@ -18,7 +18,7 @@
  * A tuple representing either a successful value or an error.
  *
  * @template T
- * @typedef {[T, Error | null]} Result
+ * @typedef {[T | null, Error | null]} Result<T>
  */
 
 const DEFAULT_DRIVER = 'localStorage';
@@ -98,10 +98,42 @@ class WebStorage {
   }
 
   /**
+   * Checks if `storageType` is supported and is available.
+   * Storage might be unavailable due to no browser support or due to being full or due to browser privacy settings.
+   *
+   * @param {WebStorageType} storageType - The storage type; available values "localStorage" or "sessionStorage".
+   * @returns {boolean} - Returns `true` if `storage` available; otherwise `false`.
+   */
+  static isAvailable(storageType) {
+    try {
+      const storage = window[storageType];
+      const testKey = STORAGE_TEST_KEY;
+
+      storage.setItem(testKey, 'test');
+      storage.getItem(testKey);
+      storage.removeItem(testKey);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Creates a new instance of WebStorage with the provided options.
+   *
+   * @param {WebStorageOptions} [options] - The options to configure the WebStorage instance.
+   * @returns {WebStorage} - Returns a new instance of WebStorage.
+   */
+  static createInstance(options) {
+    return new WebStorage(options);
+  }
+
+  /**
    * Saves an item to storage with the specified key.
    *
+   * @template T
    * @param {string} key - The key under which to store the item.
-   * @param {any} value - The item to save to the selected storage.
+   * @param {T} value - The item to save to the selected storage.
    * @throws {TypeError} - Throws if `key` is not a string.
    * @returns {Result<boolean>} - Returns an array with two elements: the first is `true` if the item was saved successfully, or `false` if it was not, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
    */
@@ -123,9 +155,10 @@ class WebStorage {
   /**
    * Gets the saved item for the specified key from the storage for a specific datastore.
    *
+   * @template T
    * @param {string} key - The key of the item to retrieve.
    * @throws {TypeError} - Throws if `key` is not a string.
-   * @returns {Result<unknown>} - Returns an array with two elements: the first is the value of the saved item, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
+   * @returns {Result<T>} - Returns an array with two elements: the first is the value of the saved item, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
    */
   getItem(key) {
     if (typeof key !== 'string') {
@@ -134,7 +167,7 @@ class WebStorage {
 
     try {
       const raw = this.#driver.getItem(this.#keyPrefix + key);
-      return raw === null ? [null, null] : [JSON.parse(raw), null];
+      return raw === null ? [null, null] : [/** @type {T} */ (JSON.parse(raw)), null];
     } catch (error) {
       return [null, error instanceof Error ? error : new Error(String(error))];
     }
@@ -188,6 +221,7 @@ class WebStorage {
         const unprefixedKey = removePrefix(key, this.#keyPrefix);
         result.push(unprefixedKey);
       });
+
       return [result, null];
     } catch (error) {
       return [[], error instanceof Error ? error : new Error(String(error))];
@@ -201,13 +235,19 @@ class WebStorage {
    */
   length() {
     const [keys, err] = this.keys();
-    return err ? [0, err] : [keys.length, null];
+
+    if (!Array.isArray(keys) || err) {
+      return [0, err];
+    }
+
+    return [keys.length, null];
   }
 
   /**
    * Iterates over all saved items in storage for a specific datastore and execute a callback function for each key-value pair.
    *
-   * @param {(value: any, key: string) => void} iteratorCallback - The callback function to execute for each key-value pair.
+   * @template T
+   * @param {(value: T, key: string) => void} iteratorCallback - The callback function to execute for each key-value pair.
    * @throws {TypeError} - Throws if `iteratorCallback` is not a function.
    * @returns {Result<boolean>} - Returns an array with two elements: the first is `true` if the iteration was successful, or `false` if it was not, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
    */
@@ -219,9 +259,10 @@ class WebStorage {
     try {
       this.#iterateStorage((key, value) => {
         const unprefixedKey = removePrefix(key, this.#keyPrefix);
-        const parsedValue = JSON.parse(value);
-        iteratorCallback.call(this, parsedValue, unprefixedKey);
+        const parsedValue = /** @type {T} */ (value === null ? null : JSON.parse(value));
+        iteratorCallback(parsedValue, unprefixedKey);
       });
+
       return [true, null];
     } catch (error) {
       return [false, error instanceof Error ? error : new Error(String(error))];
@@ -231,7 +272,7 @@ class WebStorage {
   /**
    * Iterates over all keys in the storage and executes a callback function for each key-value pair.
    *
-   * @param {(key: string, value: any) => void} callback - The callback function to execute for each key-value pair.
+   * @param {(key: string, value: string | null) => void} callback - The callback function to execute for each key-value pair.
    */
   #iterateStorage(callback) {
     const keys = Object.keys(this.#driver);
@@ -243,37 +284,6 @@ class WebStorage {
         callback(key, this.#driver.getItem(key));
       }
     }
-  }
-
-  /**
-   * Checks if `storageType` is supported and is available.
-   * Storage might be unavailable due to no browser support or due to being full or due to browser privacy settings.
-   *
-   * @param {WebStorageType} storageType - The storage type; available values "localStorage" or "sessionStorage".
-   * @returns {boolean} - Returns `true` if `storage` available; otherwise `false`.
-   */
-  static isAvailable(storageType) {
-    try {
-      const storage = window[storageType];
-      const testKey = STORAGE_TEST_KEY;
-
-      storage.setItem(testKey, 'test');
-      storage.getItem(testKey);
-      storage.removeItem(testKey);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  /**
-   * Creates a new instance of WebStorage with the provided options.
-   *
-   * @param {WebStorageOptions} [options] - The options to configure the WebStorage instance.
-   * @returns {WebStorage} - Returns a new instance of WebStorage.
-   */
-  static createInstance(options) {
-    return new WebStorage(options);
   }
 }
 

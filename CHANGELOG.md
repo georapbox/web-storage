@@ -35,12 +35,18 @@
 - Removed support for error callback functions in all methods (`getItem`, `setItem`, `removeItem`, `clear`, `keys`, `length`, `iterate`). Errors must now be handled via the returned tuple.
 - Internal `_keyPrefix` and `_driver` fields are now private class fields (`#keyPrefix`, `#driver`). They are no longer accessible outside the class.
 
+## NEW FEATURES
+
+- Export type declaration files (`.d.ts`) for TypeScript users, ensuring better type safety and autocompletion support in TypeScript projects.
+
 ### INTERNAL CHANGES
 
 - Rewrite to use native class private fields.
 - Internal noopStorage fallback now fully conforms to the Storage interface.
 - Drop Jest in favor of @web/test-runner and Playwright for testing.
 - Drop rollup in favor of esbuild for bundling.
+- Update Node.js version requirement to 22.x.x.
+- Update dependencies to their latest versions.
 
 ## v2.1.0 (2021-01-26)
 
