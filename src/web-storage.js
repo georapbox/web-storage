@@ -40,39 +40,12 @@ function removePrefix(str, prefix) {
   return str;
 }
 
-/**
- * Creates a no-operation fallback implementation of the Web Storage API.
- *
- * This function returns an object that conforms to the `Storage` interface
- * but performs no actual storage operations. It is intended for use in
- * environments where `localStorage` or `sessionStorage` is unavailable or restricted.
- *
- * Behavior:
- * - `getItem` and `key` always return `null`
- * - `setItem`, `removeItem`, and `clear` do nothing and return `undefined`
- * - `length` is always `0`
- *
- * This allows safe use of the storage API without requiring availability checks or try/catch blocks.
- *
- * @returns {Storage} A noop-compatible storage object that safely mimics the `Storage` API
- */
-function createNoopStorage() {
-  return {
-    getItem: () => null,
-    setItem: () => undefined,
-    removeItem: () => undefined,
-    key: () => null,
-    clear: () => undefined,
-    length: 0
-  };
-}
-
 class WebStorage {
   /** @type {Storage} */
   #driver;
 
   /** @type {string} */
-  #keyPrefix;
+  #keyPrefix = '';
 
   /**
    * Creates a new instance of WebStorage.
@@ -93,7 +66,7 @@ class WebStorage {
       throw new TypeError('The "keyPrefix" option must be a string.');
     }
 
-    this.#driver = WebStorage.isAvailable(opts.driver) ? window[opts.driver] : createNoopStorage();
+    this.#driver = window[opts.driver];
     this.#keyPrefix = opts.keyPrefix.trim();
   }
 

@@ -1,26 +1,44 @@
 import { expect } from '@open-wc/testing';
+import sinon from 'sinon';
 import { WebStorage } from '../src/web-storage.js';
 
-function createSafeStorage() {
-  const safeLocalStorage = {
-    getItem: () => null,
-    setItem: () => {},
-    removeItem: () => {},
-    clear: () => {},
-    key: () => null,
-    length: 1
+function createStorageWithThrowingMethod(methodName, message) {
+  const storage = {
+    getItem: sinon.stub().returns(null),
+    setItem: sinon.stub(),
+    removeItem: sinon.stub(),
+    clear: sinon.stub(),
+    key: sinon.stub(),
+    length: 0
   };
 
+  storage[methodName] = sinon.stub().throws(new Error(message));
+
   // Save at least one item to ensure the storage is not empty.
-  // This is for testing at a later point methods like iterate and clear.
-  Object.defineProperty(safeLocalStorage, 'web-storage/test', {
+  // This is for testing at a later point methods like iterate and clear
+  // which expect at least one item to be present to iterate over.
+  Object.defineProperty(storage, 'web-storage/test', {
     enumerable: true,
     configurable: true,
     writable: true,
     value: 'value'
   });
 
-  return safeLocalStorage;
+  return storage;
+}
+
+function overrideWindowLocalStorage(fakeStorage) {
+  Object.defineProperty(window, 'localStorage', {
+    configurable: true,
+    get: () => fakeStorage
+  });
+}
+
+function restoreWindowLocalStorage(original) {
+  Object.defineProperty(window, 'localStorage', {
+    configurable: true,
+    get: () => original
+  });
 }
 
 describe('WebStorage', () => {
@@ -203,167 +221,119 @@ describe('WebStorage', () => {
     expect(store.getItem('somekey')).to.deep.equal([null, null]);
   });
 
-  // --- Fallback / Noop Storage Behavior ------------------------------------------------
-
-  it('Should fallback to a noop storage driver if Storage is not available', () => {
-    const tempLocalStorage = window.localStorage;
-    delete window.localStorage;
-
-    const store = new WebStorage();
-
-    expect(store._driver instanceof Storage).to.be.false;
-
-    expect(() => store.getItem('key')).not.to.throw();
-    expect(store.getItem('key')).to.deep.equal([null, null]);
-
-    expect(() => store.setItem('key', 'value')).not.to.throw();
-    expect(store.setItem('key')).to.deep.equal([true, null]);
-
-    expect(() => store.removeItem('key')).not.to.throw();
-    expect(store.removeItem('key')).to.deep.equal([true, null]);
-
-    expect(() => store.clear()).not.to.throw();
-    expect(store.clear()).to.deep.equal([true, null]);
-
-    expect(() => store.iterate(() => {})).not.to.throw();
-    expect(store.iterate(() => {})).to.deep.equal([true, null]);
-
-    expect(() => store.keys()).not.to.throw();
-    expect(store.keys()).to.deep.equal([[], null]);
-
-    expect(() => store.length()).not.to.throw();
-    expect(store.length()).to.deep.equal([0, null]);
-
-    expect(WebStorage.isAvailable('localStorage')).to.be.false;
-
-    window.localStorage = tempLocalStorage;
-  });
-
   // --- Error values ------------------------------------------------
 
-  it('should return an error if setItem method throws after construction', () => {
+  it('should return an error if getItem method throws', () => {
     const originalLocalStorage = window.localStorage;
-    const safeLocalStorage = createSafeStorage();
+    const throwingStorage = createStorageWithThrowingMethod('getItem', 'Forced read error');
 
-    window.localStorage = safeLocalStorage;
+    overrideWindowLocalStorage(throwingStorage);
 
     const store = new WebStorage();
-
-    window.localStorage.setItem = () => {
-      throw new Error('Forced write error');
-    };
-
-    const [ok, error] = store.setItem('key', 'value');
-
-    expect(ok).to.be.false;
-    expect(error).to.be.an('error');
-    expect(error.message).to.equal('Forced write error');
-
-    window.localStorage = originalLocalStorage;
-  });
-
-  it('should return an error if getItem method throws after construction', () => {
-    const originalLocalStorage = window.localStorage;
-    const safeLocalStorage = createSafeStorage();
-
-    window.localStorage = safeLocalStorage;
-
-    const store = new WebStorage();
-
-    window.localStorage.getItem = () => {
-      throw new Error('Forced read error');
-    };
-
     const [value, error] = store.getItem('key');
 
     expect(value).to.be.null;
     expect(error).to.be.an('error');
     expect(error.message).to.equal('Forced read error');
 
-    window.localStorage = originalLocalStorage;
+    restoreWindowLocalStorage(originalLocalStorage);
   });
 
-  it('should return an error if removeItem method throws after construction', () => {
+  it('should return an error if setItem method throws', () => {
     const originalLocalStorage = window.localStorage;
-    const safeLocalStorage = createSafeStorage();
+    const throwingStorage = createStorageWithThrowingMethod('setItem', 'Forced write error');
 
-    window.localStorage = safeLocalStorage;
+    overrideWindowLocalStorage(throwingStorage);
 
     const store = new WebStorage();
+    const [ok, error] = store.setItem('key', 'value');
 
-    window.localStorage.removeItem = () => {
-      throw new Error('Forced remove error');
-    };
+    expect(ok).to.be.false;
+    expect(error).to.be.an('error');
+    expect(error.message).to.equal('Forced write error');
 
+    restoreWindowLocalStorage(originalLocalStorage);
+  });
+
+  it('should return an error if removeItem method throws', () => {
+    const originalLocalStorage = window.localStorage;
+    const throwingStorage = createStorageWithThrowingMethod('removeItem', 'Forced remove error');
+
+    overrideWindowLocalStorage(throwingStorage);
+
+    const store = new WebStorage();
     const [ok, error] = store.removeItem('key');
 
     expect(ok).to.be.false;
     expect(error).to.be.an('error');
     expect(error.message).to.equal('Forced remove error');
 
-    window.localStorage = originalLocalStorage;
+    restoreWindowLocalStorage(originalLocalStorage);
   });
 
-  it('should return an error if clear method throws after construction', () => {
+  it('should return an error if clear method throws', () => {
     const originalLocalStorage = window.localStorage;
-    const safeLocalStorage = createSafeStorage();
+    const throwingStorage = createStorageWithThrowingMethod('removeItem', 'Forced remove error');
 
-    window.localStorage = safeLocalStorage;
+    overrideWindowLocalStorage(throwingStorage);
 
     const store = new WebStorage();
-
-    window.localStorage.removeItem = () => {
-      throw new Error('Forced clear error');
-    };
-
     const [ok, error] = store.clear();
 
     expect(ok).to.be.false;
     expect(error).to.be.an('error');
-    expect(error.message).to.equal('Forced clear error');
+    expect(error.message).to.equal('Forced remove error');
 
-    window.localStorage = originalLocalStorage;
+    restoreWindowLocalStorage(originalLocalStorage);
   });
 
-  it('should return an error if keys method throws after construction', () => {
+  it('should return an error if keys method throws', () => {
     const originalLocalStorage = window.localStorage;
-    const safeLocalStorage = createSafeStorage();
+    const throwingStorage = createStorageWithThrowingMethod('getItem', 'Forced read error');
 
-    window.localStorage = safeLocalStorage;
+    overrideWindowLocalStorage(throwingStorage);
 
     const store = new WebStorage();
-
-    window.localStorage.getItem = () => {
-      throw new Error('Forced read error');
-    };
-
     const [keys, error] = store.keys();
 
     expect(keys).to.deep.equal([]);
     expect(error).to.be.an('error');
     expect(error.message).to.equal('Forced read error');
 
-    window.localStorage = originalLocalStorage;
+    restoreWindowLocalStorage(originalLocalStorage);
   });
 
-  it('should return an error if iterate method throws after construction', () => {
+  it('should return an error if length method throws', () => {
     const originalLocalStorage = window.localStorage;
-    const safeLocalStorage = createSafeStorage();
+    const throwingStorage = createStorageWithThrowingMethod('getItem', 'Forced read error');
 
-    window.localStorage = safeLocalStorage;
+    overrideWindowLocalStorage(throwingStorage);
 
     const store = new WebStorage();
+    const [len, error] = store.length();
 
-    window.localStorage.getItem = () => {
-      throw new Error('Forced read error');
-    };
+    expect(len).to.equal(0);
+    expect(error).to.be.an('error');
+    expect(error.message).to.equal('Forced read error');
 
-    const [ok, error] = store.iterate(() => {});
+    restoreWindowLocalStorage(originalLocalStorage);
+  });
+
+  it('should return an error if iterate method throws', () => {
+    const originalLocalStorage = window.localStorage;
+    const throwingStorage = createStorageWithThrowingMethod('getItem', 'Forced read error');
+
+    overrideWindowLocalStorage(throwingStorage);
+
+    const store = new WebStorage();
+    const callback = sinon.stub();
+    const [ok, error] = store.iterate(callback);
 
     expect(ok).to.be.false;
     expect(error).to.be.an('error');
     expect(error.message).to.equal('Forced read error');
+    expect(callback.called).to.be.false;
 
-    window.localStorage = originalLocalStorage;
+    restoreWindowLocalStorage(originalLocalStorage);
   });
 });

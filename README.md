@@ -85,12 +85,7 @@ WebStorage.isAvailable('localStorage');
 
 ### setItem(key, value)
 
-Saves an item to storage with the specified key. You can store items of any of the following data types as long as data can be serialized to JSON.
-
-- String
-- Number
-- Array
-- Object
+Saves an item to storage with the specified key. Any value that can be serialized to JSON can be stored, including objects, arrays, strings, numbers, and booleans.
 
 **Throws:** `TypeError` - Throws if `key` is not a string.  
 **Returns:** `[boolean, Error | null]` - Returns an array with two elements: the first is `true` if the item was saved successfully, or `false` if it was not, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
