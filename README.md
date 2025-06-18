@@ -1,13 +1,17 @@
-![build](https://github.com/georapbox/web-storage/workflows/build/badge.svg)
 [![npm version](https://img.shields.io/npm/v/@georapbox/web-storage.svg)](https://www.npmjs.com/package/@georapbox/web-storage)
-[![Coverage Status](https://coveralls.io/repos/github/georapbox/web-storage/badge.svg?branch=master)](https://coveralls.io/github/georapbox/web-storage?branch=master)
 [![npm license](https://img.shields.io/npm/l/@georapbox/web-storage.svg)](https://www.npmjs.com/package/@georapbox/web-storage)
+
+[demo]: https://georapbox.github.io/alert-element/
+[license]: https://github.com/georapbox/web-storage/blob/master/LICENSE
+[changelog]: https://github.com/georapbox/web-storage/blob/master/CHANGELOG.md
 
 # WebStorage
 
-WebStorage is a JavaScript library that improves the way you work with `localStorage` or `sessionStorage` by using a simple, `localStorage`-like API. It allows developers to store many types of data instead of just strings.
+`WebStorage` is a lightweight JavaScript library that improves how you work with `localStorage` or `sessionStorage` by providing a clean, consistent API. It supports storing and retrieving any serializable value (not just strings) by automatically handling JSON encoding and decoding internally.
 
-The purpose of this library is to allow the user to manipulate data to `localStorage` or `sessionStorage` accordingly using a namespace (default is `'web-storages/'`) as a prefix for each item's key. This is by design in order to avoid potential conflicts with other key/value pairs that are probably already saved to storage. For example, if the key prefix we provided is `'my-app/'`, calling `clear()` will remove only the items with key prefix `'my-app/'`. The same principle applies to all available API methods of the library.
+A key feature of `WebStorage` is its use of namespacing via a configurable key prefix (default: `'web-storage/'`). This ensures that all stored items are scoped to your application, preventing collisions with other data in storage. For example, using a prefix like `'my-app/'` means calling clear() will only remove items with that prefix—leaving unrelated data untouched.
+
+`WebStorage` is also designed with error handling in mind. Instead of throwing exceptions, all methods return a `[result, error]` tuple-style value allowing you to handle errors gracefully—or ignore them entirely—without needing `try...catch`.
 
 ## Install
 
@@ -15,44 +19,41 @@ The purpose of this library is to allow the user to manipulate data to `localSto
 $ npm install --save @georapbox/web-storage
 ```
 
-## Usage
+## Import
 
-The library is exported in UMD, CommonJS, and ESM formats. You can import it the following ways:
-
-### Using ESM import statement
+The library is exported in ESM format.
 
 ```js
-import WebStorage from '@georapbox/web-storage';
-```
-
-### Using CommonJS require statement
-
-```js
-const WebStorage = require('@georapbox/web-storage');
-
-// If you use a bundler like Webpack, you may need to import it the following way 
-// as it might try to use the ESM module instead of the CommonJS.
-const WebStorage = require('@georapbox/web-storage').default; 
-```
-
-### Old school browser global
-```html
-<script src="https://unpkg.com/@georapbox/web-storage"></script>
+import { WebStorage } from '@georapbox/web-storage';
 ```
 
 ## API
+
+## Constructor
+
+### new WebStorage(options = {})
+
+Creates a new instance of the `WebStorage` with the specified options. The following options can be set:
+
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| **driver** | `String` | "localStorage" | Specifies the storage driver to use. Accepts either "localStorage" or "sessionStorage". This determines where data will be persisted. |
+| **keyPrefix** | `String` | "web-storage/" | A prefix applied to all keys stored in offline storage. It is automatically trimmed on both sides to prevent user errors. You only need to set `keyPrefix` when creating a `WebStorage` instance. After that, API methods should be used with plain keys—`keyPrefix` is applied internally. |
+
+**Example**
+
+```js
+const myStore = new WebStorage({
+  driver: 'sessionStorage',
+  keyPrefix: 'my-storage/'
+});
+```
+
 ## Static methods
 
 ### WebStorage.createInstance(options = {})
 
-Creates a new instance of the WebStorage. The following options can be set:
-
-| Option | Type | Default | Description |
-| ------ | ---- | ------- | ----------- |
-| **driver** | `String` | "localStorage" | The preferred driver to use. Use one between "localStorage" or "sessionStorage". |
-| **keyPrefix<sup>1</sup>** | `String` | "web-storage/" | The prefix for all keys stored in the offline storage. The value provided is trimmed (both left and right) internally to avoid potential user mistakes. |
-
-**<sup>1</sup>** *`keyPrefix` needs to be declared only when creating an instance of `WebStorage`. Afterwards, when using any of the API methods that accept `key` as argument, we just use the key to refer to the item we want to manipulate.*
+Creates and returns a new `WebStorage` instance, just like the constructor. This convenience method allows you to instantiate without using the `new` keyword.
 
 **Example**
 
@@ -65,15 +66,14 @@ const myStore = WebStorage.createInstance({
 
 ### WebStorage.isAvailable(storageType)
 
-Check if `storageType` is supported and is available.
+Checks if `storageType` is supported and is available.
 Storage might be unavailable due to no browser support or due to being full or due to browser privacy settings.
 
-**Kind**: static method of `WebStorage`  
-**Returns**: `Boolean` - Returns `true` if Storage available; otherwise `false`
+**Returns**: `boolean` - Returns `true` if Storage available; otherwise `false`.
 
 | Param | Type | Description |
 | ----- | ---- | ----------- |
-| storageType | `String` | The storage type; available values "localStorage" or "sessionStorage" |
+| storageType | `string` | The storage type; available values "localStorage" or "sessionStorage" |
 
 **Usage**
 
@@ -83,249 +83,201 @@ WebStorage.isAvailable('localStorage');
 
 ## Instance methods
 
-### getItem(key [, onErrorCallback])
+### setItem(key, value)
 
-Gets a saved item from storage by its key.
+Saves an item to storage with the specified key. Any value that can be serialized to JSON can be stored, including objects, arrays, strings, numbers, and booleans.
 
-**Kind**: instance method of `WebStorage`  
-**Throws:** `TypeError` if `key` is not a string  
-**Returns:** `*` - Returns the retrieved value if found or `null` if value not found or operation has failed due to error
+**Throws:** `TypeError` - Throws if `key` is not a string.  
+**Returns:** `[boolean, Error | null]` - Returns an array with two elements: the first is `true` if the item was saved successfully, or `false` if it was not, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
 
 | Param | Type | Default | Description |
 | ----- | ---- | ------- | ----------- |
-| key | `String` |  |The property name of the saved item |
-| [onErrorCallback] | `Function` | `() => {}` | Callback function to be executed if there were any errors |
+| key | `string` | - | The key under which to store the item. |
+| value | `unknown` | - | The item to save to the selected storage. |
 
 **Usage**
 
 ```js
-myStore.getItem('somekey', error => {
-  // This code runs if there were any errors
-  console.error(error);
-});
+const [saved, error] = myStore.setItem('somekey', { foo: 'bar' });
 ```
 
-### setItem(key, value [, onErrorCallback])
+#### Note on value serialization
 
-Saves an item to storage. You can store items of any of the following data types as long as data can be serialized to JSON.
+`WebStorage` uses `JSON.stringify()` internally to serialize values before saving them. While this supports most common JavaScript types, some special values are silently converted:
 
-- String
-- Number
-- Array
-- Object
+- `NaN`, `Infinity`, `-Infinity`, and `undefined` → become null
+- Functions and symbols → are omitted or stored as `null/undefined`
+- Circular references → will throw a `TypeError`
 
-**Kind**: instance method of `WebStorage`  
-**Throws:** `TypeError` if `key` is not a string  
-**Returns:** `undefined`
-
-| Param | Type | Default | Description |
-| ----- | ---- | ------- | ----------- |
-| key | `String` |  | The property name of the item to save |
-| value | `*` |  | The item to save to the selected storage. |
-| [onErrorCallback] | `Function` | `() => {}` | Callback function to be executed if there were any errors |
-
-**Usage**
+For example:
 
 ```js
-myStore.setItem('somekey', { foo: 'bar' }, error => {
-  // This code runs if there were any errors
-  console.error(error);
-});
+storage.setItem('foo', NaN);
+// Will be stored as: "null"
+
+storage.getItem('foo');
+// => [null, null]
 ```
 
-### removeItem(key [, onErrorCallback])
+**Why this matters:**
 
-Removes the item for the specific key from the storage.
+If you store special or non-JSON-safe values, they may not round-trip exactly as expected. This is a deliberate design decision to keep the API simple and compatible with `Storage` constraints. If needed, consider manually encoding such values before storing them.
 
-**Kind**: instance method of `WebStorage`  
-**Throws:** `TypeError` if `key` is not a string  
-**Returns:** `undefined`
+### getItem(key)
+
+Gets the saved item for the specified key from the storage for a specific datastore.
+
+**Throws:** `TypeError` - Throws if `key` is not a string.  
+**Returns:** `[unknown, Error | null]` - Returns an array with two elements: the first is the value of the saved item, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
 
 | Param | Type | Default | Description |
 | ----- | ---- | ------- | ----------- |
-| key | `String` |  | The property name of the item to remove |
-| [onErrorCallback] | `Function` | `() => {}` | Callback function to be executed if there were any errors |
+| key | `string` | - | The key of the item to retrieve. |
 
 **Usage**
 
 ```js
-myStore.removeItem('somekey', error => {
-  // This code runs if there were any errors
-  console.error(error);
-});
+const [value, error] = myStore.getItem('somekey');
 ```
 
-### clear([onErrorCallback])
+### removeItem(key)
 
-Removes all saved items from storage.
+Removes the saved item for the specified key from storage.
 
-**Kind**: instance method of `WebStorage`  
-**Returns:** `undefined`
+**Throws:** `TypeError` - Throws if `key` is not a string.  
+**Returns:** `[boolean, Error | null]` - Returns an array with two elements: the first is `true` if the item was removed successfully, or `false` if it was not, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
 
 | Param | Type | Default | Description |
 | ----- | ---- | ------- | ----------- |
-| [onErrorCallback] | `Function` | `() => {}` | Callback function to be executed if there were any errors |
+| key | `string` | - | The key of the item to remove. |
 
 **Usage**
 
 ```js
-myStore.clear(error => {
-  // This code runs if there were any errors
-  console.error(error);
-});
+const [removed, error] = myStore.removeItem('somekey');
 ```
 
-### keys([onErrorCallback])
+### clear()
 
-Gets the list of all keys in the storage for a specific datastore.
+Removes all saved items from storage for a specific datastore.
 
-**Kind**: instance method of `WebStorage`  
-**Returns:** `Array|undefined` - Returns an array of all the keys that belong to a specific datastore. If any error occurs, returns `undefined`.
-
-| Param | Type | Default | Description |
-| ----- | ---- | ------- | ----------- |
-| [onErrorCallback] | `Function` | `() => {}` | Callback function to be executed if there were any errors |
+**Returns:** `[boolean, Error | null]` - Returns an array with two elements: the first is `true` if all items were removed successfully, or `false` if they were not, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
 
 **Usage**
 
 ```js
-myStore.keys(error => {
-  // This code runs if there were any errors
-  console.error(error);
-});
+const [cleared, error] = myStore.clear();
 ```
 
-### length([onErrorCallback])
+### keys()
 
-Gets the number of items saved in a specific datastore.
+Gets all keys (unprefixed) of saved items in a specific datastore.
 
-**Kind**: instance method of `WebStorage`  
-**Returns:** `Number|undefined` - Returns the number of items for a specific datastore. If any error occurs, returns `undefined`.
-
-| Param | Type | Default | Description |
-| ----- | ---- | ------- | ----------- |
-| [onErrorCallback] | `Function` | `() => {}` | Callback function to be executed if there were any errors |
+**Returns:** `[string[], Error | null]` - Returns an array with two elements: the first is an array of keys (without the prefix) for the saved items, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
 
 **Usage**
 
 ```js
-myStore.length(error => {
-  // This code runs if there were any errors
-  console.error(error);
-});
+const [keys, error] = myStore.keys();
 ```
 
-### iterate(iteratorCallback [, onErrorCallback])
+### length()
 
-Iterate over all value/key pairs in datastore.
+Gets the number of saved items in a specific datastore.
 
-**Kind**: instance method of `WebStorage`  
-**Throws:** `TypeError` if `iteratorCallback` is not a function  
-**Returns:** `undefined`
-
-| Param | Type | Default | Description |
-| ----- | ---- | ------- | ----------- |
-| iteratorCallback | `Function` |  | A callabck function to be executed for each iteration |
-| [onErrorCallback] | `Function` | `() => {}` | Callback function to be executed if there were any errors |
-
-`iteratorCallback` is called once for each pair, with the following arguments:
-
-| Param | Type | Description |
-| ----- | ---- | ----------- |
-| value | `*` | The value of the saved item. |
-| key | `String` | The key of the saved item. |
+**Returns:** `[number, Error | null]` - Returns an array with two elements: the first is the number of items saved in the datastore, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
 
 **Usage**
 
 ```js
-myStore.iterate((value, key) => {
-  // Resulting key/value pair; this callback will be executed for every item in the datastore.
+const [len, error] = myStore.length();
+```
+
+### iterate(iteratorCallback)
+
+Iterates over all saved items in storage for a specific datastore and execute a callback function for each key-value pair.
+
+> [!IMPORTANT]
+> `iterate` does not guarantee the order of iteration. The order may vary depending on the browser implementation and storage driver used.
+
+**Throws:** `TypeError` - Throws if `callback` is not a function.  
+**Returns:** `[boolean, Error | null]` - Returns an array with two elements: the first is `true` if the iteration was successful, or `false` if it was not, and the second is `null` if no error occurred, or an `Error` object if an error occurred.
+
+| Param | Type | Default | Description |
+| ----- | ---- | ------- | ----------- |
+| iteratorCallback | `(value: unknown, key: string) => void` | - | A callabck function to be executed for each iteration |
+
+**Usage**
+
+```js
+const [iterated, error] = myStore.iterate((value, key) => {
   console.log(value, key);
-}, error => {
-  // This code runs if there were any errors
-  console.error(error);
 });
 ```
 
-## Full usage example
+## Development
 
-```js
-//
-// NOTE: The example below assumes that we begin with empty localStorage.
-//
+Below are the instructions for setting up the development environment.
 
-// Create a new instance of WebStorage using localStorage for driver (default) and 'my-store/' for prefixing keys
-const webStorage = WebStorage.createInstance({
-  keyPrefix: 'my-store/'
-});
+### Prerequisites
 
-const onError = error => console.error(error);
+- Node.js (v22.x.x)
+- npm (v10.x.x)
 
-webStorage.setItem('user1', { id: 1, name: 'John Doe' }, onError);
+### Installation
 
-webStorage.setItem('user2', { id: 2, name: 'Tim Smith' }, onError);
+Clone the repository and install the dependencies:
 
-localStorage.setItem('user3', JSON.stringify({ id: 3, name: 'Alice Cooper' }));
-
-webStorage.getItem('user1'); // -> { id: 1, name: 'John Doe' }
-
-webStorage.getItem('user2'); // -> { id: 2, name: 'Tim Smith' }
-
-webStorage.getItem('user3'); // -> null
-
-webStorage.keys();  // -> ['user1', 'user2']
-
-webStorage.length(); // -> 2
-
-localStorage.length(); // -> 3
-
-webStorage.iterate((value, key) => {
-  console.log(value, '-', key);
-  // -> { id: 1, name: 'John Doe' } - 'user1'
-  // -> { id: 2, name: 'Tim Smith' } - 'user2'
-});
-
-webStorage.removeItem('user1');
-
-webStorage.getItem('user1'); // -> null
-
-webStorage.clear();
-
-webStorage.keys(); // -> []
-
-webStorage.length(); // -> 0
-
-localStorage.length(); // -> 1
+```sh
+$ git clone git@github.com:georapbox/web-storage.git
+$ cd web-storage
+$ npm install
 ```
-
-## For development
 
 ### Build for development
+
+Build the library for development and watch for any changes to the source files:
 
 ```sh
 $ npm run dev
 ```
 
-Builds the library for development and watches for any changes.
-
 ### Build for production
+
+Build the library for production. This will create a minified version of the library in the `dist` directory.
 
 ```sh
 $ npm run build
 ```
 
-Builds the library for production; creates library bundles (`UMD`, `ESM`, `CommonJS`) under the `dist/` directory.
-
 ### Test
+
+Run the tests to ensure everything is working correctly:
 
 ```sh
 $ npm test
 ```
 
+### Test with coverage
+
+Generate a test coverage report. This will run the tests and generate a coverage report in the `coverage` directory.
+
+```sh
+$ npm run test:coverage
+```
+
+### Linting
+
+Run the linter to check for any code style issues:
+
+```sh
+$ npm run lint
+```
+
 ## Changelog
 
-For API updates and breaking changes, check the [CHANGELOG](https://github.com/georapbox/web-storage/blob/master/CHANGELOG.md).
+For API updates and breaking changes, check the [CHANGELOG][changelog].
 
 ## License
 
-[The MIT License (MIT)](https://georapbox.mit-license.org/@2018)
+[The MIT License (MIT)][license]
